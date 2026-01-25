@@ -178,13 +178,24 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
       }
 
       const topGlow = ctx.createRadialGradient(width / 2, -height * 0.3, 0, width / 2, 0, height * 0.9);
-      topGlow.addColorStop(0, `hsla(${160 + Math.sin(time * 0.5) * 20}, 65%, 90%, 0.18)`);
-      topGlow.addColorStop(0.2, `hsla(${175 + Math.cos(time * 0.4) * 15}, 55%, 80%, 0.1)`);
-      topGlow.addColorStop(0.5, `hsla(${190}, 45%, 70%, 0.04)`);
+      topGlow.addColorStop(0, `hsla(${50 + Math.sin(time * 0.3) * 10}, 70%, 95%, 0.25)`);
+      topGlow.addColorStop(0.15, `hsla(${160 + Math.sin(time * 0.5) * 20}, 65%, 90%, 0.18)`);
+      topGlow.addColorStop(0.3, `hsla(${175 + Math.cos(time * 0.4) * 15}, 55%, 80%, 0.1)`);
+      topGlow.addColorStop(0.6, `hsla(${190}, 45%, 70%, 0.04)`);
       topGlow.addColorStop(1, "transparent");
 
       ctx.fillStyle = topGlow;
       ctx.globalCompositeOperation = "screen";
+      ctx.fillRect(0, 0, width, height);
+
+      const divineLight = ctx.createRadialGradient(width / 2, height * 0.1, 0, width / 2, height * 0.3, height * 0.6);
+      const divineBreath = Math.sin(time * 0.4) * 0.03 + 0.97;
+      divineLight.addColorStop(0, `rgba(255, 252, 240, ${0.12 * divineBreath})`);
+      divineLight.addColorStop(0.2, `rgba(255, 248, 220, ${0.06 * divineBreath})`);
+      divineLight.addColorStop(0.5, `rgba(255, 245, 200, 0.02)`);
+      divineLight.addColorStop(1, "transparent");
+      
+      ctx.fillStyle = divineLight;
       ctx.fillRect(0, 0, width, height);
       ctx.globalCompositeOperation = "source-over";
 
@@ -223,40 +234,42 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
 
   useEffect(() => {
     const sequence = async () => {
-      await new Promise((r) => setTimeout(r, 600));
+      await new Promise((r) => setTimeout(r, 1000));
       setPhase("approaching");
 
       let progress = 0;
       const zoomInterval = setInterval(() => {
-        progress += 0.015;
-        const eased = 1 - Math.pow(1 - progress, 3);
+        progress += 0.012;
+        const eased = 1 - Math.pow(1 - progress, 4);
         setZoom(0.2 + eased * 0.8);
         if (progress >= 1) clearInterval(zoomInterval);
       }, 25);
 
       await new Promise((r) => setTimeout(r, 2500));
       setPhase("arrived");
+
+      await new Promise((r) => setTimeout(r, 800));
       setShowText(true);
 
-      await new Promise((r) => setTimeout(r, 1200));
+      await new Promise((r) => setTimeout(r, 1500));
       setShowButton(true);
 
-      await new Promise((r) => setTimeout(r, 800));
+      await new Promise((r) => setTimeout(r, 2000));
       setPhase("lookDown1");
 
-      await new Promise((r) => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1500));
       setPhase("lookUp1");
 
-      await new Promise((r) => setTimeout(r, 800));
+      await new Promise((r) => setTimeout(r, 1200));
       setPhase("lookDown2");
 
-      await new Promise((r) => setTimeout(r, 600));
+      await new Promise((r) => setTimeout(r, 1000));
       setPhase("tiltHead");
 
-      await new Promise((r) => setTimeout(r, 1200));
+      await new Promise((r) => setTimeout(r, 2000));
       setPhase("lookDown3");
 
-      await new Promise((r) => setTimeout(r, 800));
+      await new Promise((r) => setTimeout(r, 1200));
       setPhase("ready");
     };
     sequence();
@@ -354,7 +367,7 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
               alt="Your owl companion"
               width={500}
               height={667}
-              className="w-48 h-64 md:w-64 md:h-80 lg:w-72 lg:h-96 object-contain"
+              className="w-40 h-56 md:w-52 md:h-72 lg:w-60 lg:h-80 object-contain"
               style={{
                 filter: `drop-shadow(0 0 ${40 + zoom * 50}px rgba(93,241,179,0.5)) drop-shadow(0 0 ${70 + zoom * 80}px rgba(100,183,243,0.3))`,
                 maskImage: "radial-gradient(ellipse 90% 95% at 50% 50%, black 60%, transparent 90%)",
@@ -366,64 +379,87 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
         </div>
 
         <div 
-          className={`mt-8 text-center relative z-10 transition-all duration-700 ${
-            showText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          className="mt-6 text-center relative z-20"
+          style={{ 
+            opacity: showText ? 1 : 0,
+            transform: showText ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 2s ease, transform 2s ease",
+          }}
         >
-          <p className="text-emerald-200/50 text-xs tracking-[0.5em] uppercase mb-4 font-light">
+          <p 
+            className="text-amber-100/50 text-xs tracking-[0.5em] uppercase mb-4 font-light"
+            style={{
+              textShadow: "0 0 40px rgba(255,250,220,0.5)",
+            }}
+          >
             Eight Owls
           </p>
           <h1 
-            className="text-3xl md:text-4xl lg:text-5xl font-extralight text-white/90 mb-10 tracking-wider"
+            className="text-4xl md:text-5xl lg:text-6xl font-thin text-white mb-4 tracking-wide"
             style={{ 
-              textShadow: "0 0 60px rgba(93,241,179,0.3), 0 0 120px rgba(100,183,243,0.2)",
+              textShadow: "0 0 80px rgba(255,252,240,0.5), 0 0 160px rgba(255,250,220,0.3)",
             }}
           >
             Meet Your Mirror
           </h1>
+          <p 
+            className="text-white/50 text-base font-extralight tracking-wider mb-10"
+            style={{ 
+              opacity: showButton ? 1 : 0,
+              transition: "opacity 1s ease 0.5s",
+            }}
+          >
+            A reflection of your truest self
+          </p>
           
           <div 
-            className={`transition-all duration-700 ${
-              showButton ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
+            style={{ 
+              opacity: showButton ? 1 : 0, 
+              transform: showButton ? "translateY(0)" : "translateY(15px)",
+              transition: "opacity 1s ease 0.8s, transform 1s ease 0.8s",
+            }}
           >
             <button
               onClick={onComplete}
-              className={`group relative px-14 py-4 rounded-full overflow-hidden transition-all duration-500 hover:scale-105 ${
+              className={`group relative px-16 py-5 rounded-full overflow-hidden transition-all duration-700 hover:scale-105 ${
                 phase === "lookDown1" || phase === "lookDown2" || phase === "lookDown3"
-                  ? "ring-2 ring-emerald-400/50 scale-105"
+                  ? "ring-2 ring-amber-200/40 scale-105"
                   : ""
               }`}
             >
               <div 
-                className={`absolute inset-0 transition-all duration-500 ${
-                  phase === "lookDown1" || phase === "lookDown2" || phase === "lookDown3"
-                    ? "bg-emerald-500/20"
-                    : ""
-                }`}
+                className="absolute inset-0 transition-all duration-700"
                 style={{
-                  background: "linear-gradient(135deg, rgba(93,241,179,0.15) 0%, rgba(100,183,243,0.1) 100%)",
-                  backdropFilter: "blur(10px)",
+                  background: phase === "lookDown1" || phase === "lookDown2" || phase === "lookDown3"
+                    ? "linear-gradient(135deg, rgba(255,250,220,0.25) 0%, rgba(255,252,240,0.15) 100%)"
+                    : "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,252,240,0.05) 100%)",
+                  backdropFilter: "blur(12px)",
                 }}
               />
               <div 
-                className="absolute inset-[1px] rounded-full transition-all duration-500 border border-white/10"
+                className="absolute inset-[1px] rounded-full transition-all duration-700 border border-white/15"
                 style={{ 
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(93,241,179,0.05) 100%)",
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,250,220,0.04) 100%)",
                 }}
               />
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-white/10" />
-              <span className="relative text-white/90 font-light tracking-[0.3em] text-sm uppercase">
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-white/15" />
+              <span 
+                className="relative text-white font-light tracking-[0.4em] text-sm uppercase"
+                style={{ textShadow: "0 0 30px rgba(255,255,255,0.4)" }}
+              >
                 Begin
               </span>
             </button>
 
             {(phase === "tiltHead") && (
               <p 
-                className="mt-6 text-emerald-300/60 text-sm font-light animate-pulse"
-                style={{ animation: "fadeIn 0.5s ease-out" }}
+                className="mt-8 text-amber-100/60 text-sm font-light tracking-wide"
+                style={{ 
+                  animation: "breathe 3s ease-in-out infinite",
+                  textShadow: "0 0 25px rgba(255,250,220,0.4)",
+                }}
               >
-                Go ahead, click it
+                Your journey awaits
               </p>
             )}
           </div>
@@ -434,6 +470,10 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes breathe {
+          0%, 100% { opacity: 0.5; transform: scale(1); }
+          50% { opacity: 0.7; transform: scale(1.02); }
         }
       `}</style>
     </div>
