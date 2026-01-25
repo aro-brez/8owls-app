@@ -1,8 +1,18 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import dynamic from "next/dynamic";
 import AuroraVisualizer from "./AuroraVisualizer";
 import { converse, playAudio, transcribeAudio } from "@/lib/api";
+
+const Dashboard3D = dynamic(() => import("./Dashboard3D"), { 
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500/30 to-cyan-500/30 animate-pulse" />
+    </div>
+  )
+});
 
 interface ConversationProps {
   profile: {
@@ -303,13 +313,15 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
       </header>
 
       <main className="relative z-10 flex-1 flex flex-col items-center px-4 pb-6">
-        <div className="flex-shrink-0 py-4">
-          <FloatingOwl 
-            avatarId={profile.owlAvatar} 
-            name={profile.owlName}
+        <div className="flex-shrink-0 w-full h-72 md:h-96 relative">
+          <Dashboard3D 
+            avatarId={profile.owlAvatar}
             isListening={isRecording}
             isSpeaking={isSpeaking}
           />
+          <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-lg font-medium text-white/90">
+            {profile.owlName}
+          </p>
         </div>
 
         <div className="w-full max-w-3xl py-4">
