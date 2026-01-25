@@ -1,13 +1,13 @@
 # Eight Owls - Meet Your Mirror
 
 ## Overview
-Eight Owls is a voice-enabled consciousness companion app where everyone gets a personal AI owl that sounds like them, learns from them, and helps them think clearer. Sister brand of BREZ with ethereal, divine, ancient-future vibes.
+Eight Owls is a voice-enabled consciousness companion app where everyone gets a personal AI owl that sounds like them, learns from them, and helps them think clearer. Sister brand of BREZ with ethereal, divine, ancient-future vibes. Harry Potter-inspired magical owl that flies in and becomes your mirror.
 
 ## Tech Stack
 - **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS 4
 - **Backend**: Python 3.11, FastAPI, Uvicorn
 - **Voice Services**: Deepgram (STT), Cartesia (TTS/voice cloning)
-- **Design**: BREZ-inspired color palette (Mindaro Green, Cold Violet, Azure, Pink, Turquoise)
+- **Design**: Dark mystical theme with BREZ color accents
 
 ## Project Structure
 ```
@@ -16,67 +16,88 @@ Eight Owls is a voice-enabled consciousness companion app where everyone gets a 
 │   └── src/
 │       ├── app/           # Pages and layouts
 │       │   ├── layout.tsx
-│       │   ├── page.tsx
-│       │   └── globals.css
-│       ├── components/    # React components
-│       │   ├── AuroraVisualizer.tsx  # Canvas-based aurora animation
-│       │   ├── OwlAvatar.tsx         # Owl avatar with 12 gradient styles
-│       │   ├── Onboarding.tsx        # Voice recording + owl setup
-│       │   └── Conversation.tsx      # Main chat interface
+│       │   ├── page.tsx   # Main entry with intro/onboarding/conversation flow
+│       │   └── globals.css # Dark mystical theme styles
+│       ├── components/
+│       │   ├── MagicalIntro.tsx    # Owl flight-in animation with starry sky
+│       │   ├── AuroraVisualizer.tsx # Voice visualizer (light theme)
+│       │   ├── OwlAvatar.tsx       # Owl avatars with gradient styles
+│       │   ├── Onboarding.tsx      # 7 aha moments journey
+│       │   └── Conversation.tsx    # Main chat interface
 │       └── lib/
-│           └── api.ts     # API utilities for backend communication
+│           └── api.ts     # API utilities
 ├── server/                 # FastAPI backend
 │   ├── app.py             # Main app with CORS, routing
 │   ├── voice.py           # Voice API endpoints
-│   ├── deepgram_client.py # Speech-to-text integration
-│   └── cartesia_client.py # Text-to-speech integration
-├── run.py                  # Backend entry point (port 8000)
-└── docs/                   # Documentation
+│   ├── deepgram_client.py # STT integration
+│   └── cartesia_client.py # TTS integration
+└── run.py                  # Backend entry point (port 8000)
 ```
 
 ## Running the Application
 - **Frontend**: Runs on port 5000 via `cd web && npm run dev`
 - **Backend API**: Runs on port 8000 via `python run.py`
 
-## Key Features
-1. **Onboarding Flow**: Voice recording (30+ sec), owl naming, avatar selection
-2. **Aurora Visualizer**: Canvas-based, responds to voice amplitude and state (listening, speaking, processing)
-3. **Conversation Interface**: Real-time voice recording with transcript display
-4. **12 Owl Avatars**: Gradient-styled with BREZ colors
-5. **Settings Panel**: Memory controls, owl customization, start over option
+## The Magical Experience
 
-## Brand Colors (BREZ Palette)
-- Mindaro Green: #E3F98A
-- Cold Violet: #8F6CF3
-- Azure: #64B7F3
-- Pink: #F361D3
-- Turquoise: #5DF1B3
-- Silver: #EAEDEE
+### Opening Animation (MagicalIntro)
+1. Dark starry night sky appears with twinkling stars
+2. Aurora borealis waves gently shimmer
+3. Magical owl flies in from above with wings animated
+4. Owl lands, pauses, and gazes at you with glowing golden-violet eyes
+5. "Eight Owls - Meet Your Mirror" text fades in
+6. "Begin" button appears with magical gradient
+
+### 7 Aha Moments (Onboarding)
+1. **Aha 1 - Intro**: "Hello. I'm going to become your mirror."
+2. **Aha 2 - Listening**: "Tell me about yourself" with microphone ready
+3. **Aha 3 - Recording**: Owl listens with animated eyes responding to voice
+4. **Aha 4 - Heard**: "I heard you. Your voice, your story, your essence."
+5. **Aha 5 - Naming**: "What shall I be called?" - name your owl
+6. **Aha 6 - Avatar**: "How shall I appear?" - choose owl appearance
+7. **Aha 7 - Awakening**: Owl awakens with your voice and personalized greeting
+
+## Key Features
+1. **Magical Intro**: Canvas-based starry sky with owl flight animation
+2. **7 Aha Moments**: Progressive onboarding with moments of delight
+3. **Voice Cloning**: Your owl learns to speak like you
+4. **Aurora Visualizer**: Responds to voice in dark and light themes
+5. **12+ Owl Avatars**: Gradient-styled with mystical glow effects
+6. **Conversation Interface**: Real-time voice chat with transcript
+
+## Brand Colors (Dark Mystical Theme)
+- Background: #0a0515 (Deep space)
+- Surface: #1a1235 (Dark violet)
+- Accent 1: #8F6CF3 (Cold Violet)
+- Accent 2: #64B7F3 (Azure)
+- Accent 3: #5DF1B3 (Turquoise)
+- Accent 4: #E3F98A (Mindaro/Gold glow)
+- Accent 5: #F361D3 (Pink)
 
 ## API Endpoints
-- `POST /api/voice/onboard` - Process voice sample, create user profile, clone voice
-- `POST /api/voice/converse` - Transcribe user speech, generate AI response, return TTS audio
+- `POST /api/voice/onboard` - Process voice sample, create profile, clone voice
+- `POST /api/voice/converse` - Transcribe speech, generate AI response, TTS audio
 - `POST /api/voice/transcribe` - Speech-to-text only
 - `POST /api/voice/speak` - Text-to-speech with cloned voice
 - `GET /health` - Health check
 
 ## Environment Variables
 - `DEEPGRAM_API_KEY` - For speech-to-text
-- `CARTESIA_API_KEY` - For text-to-speech and voice cloning
+- `CARTESIA_API_KEY` - For TTS and voice cloning
 - `ANTHROPIC_API_KEY` - For AI processing (optional)
-- `NEXT_PUBLIC_API_URL` - Backend API URL (default: http://localhost:8000)
+- `NEXT_PUBLIC_API_URL` - Backend API URL
 
 ## Recent Changes
-- January 2026: Complete frontend-backend integration
-  - Wired Onboarding.tsx to call /api/voice/onboard with audio blob
-  - Wired Conversation.tsx to call /api/voice/converse for real-time chat
-  - Added graceful fallbacks when API keys are missing
-  - Configured CORS and Next.js allowedDevOrigins for Replit
-  - Set up deployment configuration
+- January 2026: Magical intro and 7 aha moments
+  - Created MagicalIntro.tsx with owl flight animation
+  - Redesigned Onboarding.tsx with dark mystical theme
+  - Added starry sky canvas with twinkling stars
+  - Implemented owl gaze animation with glowing eyes
+  - Built 7-step onboarding journey with smooth transitions
 
 ## The Vibe
-- Ethereal - Light, floating, breathes
-- Divine - Sacred, attention respected
-- Ancient Future - Timeless design
-- Sophisticated - Refined, knows what to leave out
-- Apple Intuitive - No learning curve, just works
+- **Magical** - Harry Potter-inspired enchantment
+- **Ethereal** - Light, floating, breathes
+- **Divine** - Sacred, attention respected
+- **Ancient Future** - Timeless mystical design
+- **Pure Magic** - Wow from first moment
