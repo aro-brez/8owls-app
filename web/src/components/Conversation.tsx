@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import AuroraVisualizer from "./AuroraVisualizer";
-import OwlAvatar from "./OwlAvatar";
 import { converse, playAudio, transcribeAudio } from "@/lib/api";
 
 interface ConversationProps {
@@ -23,12 +22,75 @@ interface Message {
   timestamp: Date;
 }
 
+const owlImages = [
+  "/owls/great-horned-owl.png",
+  "/owls/snowy-owl.png",
+  "/owls/barn-owl.png",
+  "/owls/spotted-owl.png",
+  "/owls/grey-owl.png",
+  "/owls/long-eared-owl.png",
+];
+
+function FloatingOwl({ avatarId, name, isListening, isSpeaking }: { 
+  avatarId: number; 
+  name: string;
+  isListening: boolean;
+  isSpeaking: boolean;
+}) {
+  const [bobOffset, setBobOffset] = useState(0);
+  const [swayOffset, setSwayOffset] = useState(0);
+  
+  useEffect(() => {
+    let frame: number;
+    let time = 0;
+    
+    const animate = () => {
+      time += 0.02;
+      setBobOffset(Math.sin(time * 1.5) * 8);
+      setSwayOffset(Math.sin(time * 0.8) * 3);
+      frame = requestAnimationFrame(animate);
+    };
+    
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  const glowIntensity = isListening ? 0.8 : isSpeaking ? 0.6 : 0.3;
+  const scale = isListening ? 1.05 : isSpeaking ? 1.02 : 1;
+
+  return (
+    <div 
+      className="relative flex flex-col items-center"
+      style={{
+        transform: `translateY(${bobOffset}px) rotate(${swayOffset}deg) scale(${scale})`,
+        transition: 'transform 0.3s ease-out'
+      }}
+    >
+      <div 
+        className="relative w-48 h-48 md:w-64 md:h-64"
+        style={{
+          filter: `drop-shadow(0 0 ${40 * glowIntensity}px rgba(147, 112, 219, ${glowIntensity})) 
+                   drop-shadow(0 0 ${60 * glowIntensity}px rgba(100, 183, 243, ${glowIntensity * 0.7}))
+                   drop-shadow(0 0 ${20 * glowIntensity}px rgba(93, 241, 179, ${glowIntensity * 0.5}))`
+        }}
+      >
+        <img
+          src={owlImages[avatarId - 1] || owlImages[0]}
+          alt={name}
+          className="w-full h-full object-contain"
+        />
+      </div>
+      <p className="mt-2 text-lg font-medium text-white/90">{name}</p>
+    </div>
+  );
+}
+
 export default function Conversation({ profile, onReset }: ConversationProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
       role: "owl",
-      content: `Welcome back! I'm ${profile.owlName}, your Owl. What would you like to work on today?`,
+      content: `Welcome back! I'm ${profile.owlName}, your Owl. What would you like to explore today?`,
       timestamp: new Date(),
     },
   ]);
@@ -197,48 +259,60 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
     }
   };
 
+  const latestOwlMessage = messages.filter(m => m.role === "owl").slice(-1)[0];
+  const latestUserMessage = messages.filter(m => m.role === "user").slice(-1)[0];
+
   return (
-    <div className="min-h-screen gradient-divine flex flex-col">
+    <div className="min-h-screen bg-[#0a0515] flex flex-col overflow-hidden relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0515] via-[#12082a] to-[#0a0515]" />
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-500/10 rounded-full blur-3xl" />
+      </div>
+
       {error && (
-        <div className="absolute top-20 left-4 right-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm text-center z-40">
+        <div className="absolute top-20 left-4 right-4 p-3 bg-red-900/50 border border-red-500/50 rounded-xl text-red-200 text-sm text-center z-40 backdrop-blur-sm">
           {error}
         </div>
       )}
 
-      <header className="flex items-center justify-between p-4 backdrop-ethereal border-b border-gray-100">
+      <header className="relative z-10 flex items-center justify-between p-6">
         <button
           onClick={() => setShowSettings(true)}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 hover:bg-white/10 rounded-full transition-colors"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <div className="flex items-center gap-2">
-          <OwlAvatar avatarId={profile.owlAvatar} size="sm" animated={false} />
-          <span className="font-semibold">{profile.owlName}</span>
-        </div>
+        
+        <h1 className="text-2xl md:text-3xl font-black tracking-wider text-white">
+          BREZ
+        </h1>
+        
         <button
           onClick={() => setShowSettings(true)}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 hover:bg-white/10 rounded-full transition-colors"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </button>
       </header>
 
-      <main className="flex-1 flex flex-col items-center p-4 max-w-2xl mx-auto w-full">
-        <div className="py-6">
-          <OwlAvatar
-            avatarId={profile.owlAvatar}
+      <main className="relative z-10 flex-1 flex flex-col items-center px-4 pb-6">
+        <div className="flex-shrink-0 py-4">
+          <FloatingOwl 
+            avatarId={profile.owlAvatar} 
             name={profile.owlName}
-            size="lg"
+            isListening={isRecording}
+            isSpeaking={isSpeaking}
           />
         </div>
 
-        <div className="w-full py-4">
+        <div className="w-full max-w-3xl py-4">
           <AuroraVisualizer
             isListening={isRecording}
             isSpeaking={isSpeaking}
@@ -247,80 +321,106 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
           />
         </div>
 
-        <div className="flex-1 w-full overflow-y-auto mb-4 space-y-4 max-h-64">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`text-bubble ${
-                message.role === "user" ? "bg-gray-50" : "bg-white"
-              }`}
-            >
-              <p className="text-sm font-medium text-gray-500 mb-1">
-                {message.role === "user" ? "You" : profile.owlName}
+        <div className="w-full max-w-3xl flex-1 space-y-4 overflow-hidden">
+          {latestOwlMessage && (
+            <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10">
+              <p className="text-xs font-medium text-purple-300 mb-2 uppercase tracking-wider">
+                {profile.owlName}
               </p>
-              <p className="text-gray-700">{message.content}</p>
+              <p className="text-white/90 text-lg leading-relaxed">
+                {latestOwlMessage.content}
+              </p>
             </div>
-          ))}
+          )}
+          
+          {latestUserMessage && (
+            <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-purple-500/10 backdrop-blur-md border border-white/10">
+              <p className="text-xs font-medium text-cyan-300 mb-2 uppercase tracking-wider">
+                You
+              </p>
+              <p className="text-white/80 text-lg leading-relaxed">
+                {latestUserMessage.content}
+              </p>
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="py-6">
+        <div className="flex-shrink-0 pt-6">
           <button
             onClick={isRecording ? stopRecording : startRecording}
             disabled={isProcessing || isSpeaking}
-            className={`mic-button ${isRecording ? "recording" : ""} ${
-              isProcessing || isSpeaking ? "opacity-50 cursor-not-allowed" : ""
+            className={`relative w-20 h-20 rounded-full transition-all duration-300 ${
+              isRecording 
+                ? "bg-gradient-to-br from-pink-500 to-purple-600 scale-110" 
+                : "bg-gradient-to-br from-purple-600 to-cyan-500"
+            } ${
+              isProcessing || isSpeaking ? "opacity-50 cursor-not-allowed" : "hover:scale-105"
             }`}
+            style={{
+              boxShadow: isRecording 
+                ? '0 0 40px rgba(236, 72, 153, 0.5), 0 0 80px rgba(147, 51, 234, 0.3)' 
+                : '0 0 30px rgba(147, 51, 234, 0.4), 0 0 60px rgba(6, 182, 212, 0.2)'
+            }}
           >
-            {isRecording ? (
-              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <rect x="6" y="6" width="12" height="12" rx="2" />
-              </svg>
-            ) : (
-              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z" />
-              </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              {isRecording ? (
+                <div className="w-6 h-6 bg-white rounded-sm" />
+              ) : (
+                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z" />
+                </svg>
+              )}
+            </div>
+            {isRecording && (
+              <div className="absolute inset-0 rounded-full animate-ping bg-pink-500/30" />
             )}
           </button>
-          <p className="text-sm text-gray-400 text-center mt-2">
+          <p className="text-sm text-white/50 text-center mt-3">
             {isProcessing ? "Thinking..." : isSpeaking ? "Speaking..." : isRecording ? "Tap to stop" : "Tap to speak"}
           </p>
         </div>
       </main>
 
       {showSettings && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-6">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-[#1a1235] border border-white/10 rounded-3xl p-6 w-full max-w-md space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Settings</h2>
+              <h2 className="text-xl font-semibold text-white">Settings</h2>
               <button
                 onClick={() => setShowSettings(false)}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className="p-2 hover:bg-white/10 rounded-full transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-gray-50">
-                <h3 className="font-medium mb-2">Your Owl</h3>
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                <h3 className="font-medium text-white/80 mb-3">Your Owl</h3>
                 <div className="flex items-center gap-4">
-                  <OwlAvatar avatarId={profile.owlAvatar} size="md" animated={false} />
+                  <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-purple-500/20 to-cyan-500/20 p-1">
+                    <img 
+                      src={owlImages[profile.owlAvatar - 1] || owlImages[0]} 
+                      alt={profile.owlName}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                   <div>
-                    <p className="font-semibold">{profile.owlName}</p>
-                    <p className="text-sm text-gray-500">Your consciousness companion</p>
+                    <p className="font-semibold text-white">{profile.owlName}</p>
+                    <p className="text-sm text-white/50">Your consciousness companion</p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-gray-50">
-                <h3 className="font-medium mb-2">Memory</h3>
-                <p className="text-sm text-gray-500 mb-3">
-                  {profile.owlName} remembers your conversations to help you better.
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                <h3 className="font-medium text-white/80 mb-2">Memory</h3>
+                <p className="text-sm text-white/50 mb-3">
+                  {profile.owlName} remembers your conversations.
                 </p>
-                <button className="text-sm text-red-500 hover:underline">
+                <button className="text-sm text-red-400 hover:text-red-300 transition-colors">
                   Clear all memory
                 </button>
               </div>
@@ -330,7 +430,7 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
                   setShowSettings(false);
                   onReset();
                 }}
-                className="w-full py-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                className="w-full py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors border border-red-500/20"
               >
                 Start Over
               </button>
