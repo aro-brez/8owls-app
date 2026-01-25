@@ -57,81 +57,143 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
     let animationId: number;
     let time = 0;
 
+    interface AuroraRibbon {
+      baseY: number;
+      amplitude: number;
+      frequency: number;
+      speed: number;
+      phase: number;
+      hue: number;
+      hueShift: number;
+      alpha: number;
+      depth: number;
+      width: number;
+      drift: number;
+      driftSpeed: number;
+    }
+
+    const ribbons: AuroraRibbon[] = [];
+    for (let i = 0; i < 15; i++) {
+      const depth = Math.random();
+      ribbons.push({
+        baseY: height * (0.05 + Math.random() * 0.35),
+        amplitude: 20 + Math.random() * 60,
+        frequency: 0.0008 + Math.random() * 0.002,
+        speed: 0.2 + Math.random() * 0.6,
+        phase: Math.random() * Math.PI * 2,
+        hue: 140 + Math.random() * 80,
+        hueShift: 10 + Math.random() * 30,
+        alpha: 0.02 + Math.random() * 0.06,
+        depth: depth,
+        width: 80 + Math.random() * 150,
+        drift: Math.random() * Math.PI * 2,
+        driftSpeed: 0.1 + Math.random() * 0.3,
+      });
+    }
+    ribbons.sort((a, b) => a.depth - b.depth);
+
     const animate = () => {
-      time += 0.005;
+      time += 0.004;
       ctx.clearRect(0, 0, width, height);
 
       const bgGradient = ctx.createLinearGradient(0, 0, 0, height);
-      bgGradient.addColorStop(0, "#0a0d18");
-      bgGradient.addColorStop(0.3, "#0c1020");
-      bgGradient.addColorStop(1, "#080510");
+      bgGradient.addColorStop(0, "#070a12");
+      bgGradient.addColorStop(0.25, "#0a0e1a");
+      bgGradient.addColorStop(0.6, "#08091a");
+      bgGradient.addColorStop(1, "#050510");
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, width, height);
 
-      const auroraLayers = 8;
-      for (let layer = 0; layer < auroraLayers; layer++) {
-        const layerOffset = layer * 0.3;
-        const baseY = height * (0.08 + layer * 0.06);
-        const amplitude = 30 + layer * 15;
-        const frequency = 0.0015 - layer * 0.0001;
+      for (const ribbon of ribbons) {
+        const verticalDrift = Math.sin(time * ribbon.driftSpeed + ribbon.drift) * 30;
+        const horizontalDrift = Math.cos(time * ribbon.driftSpeed * 0.7 + ribbon.drift) * 50;
+        
+        const depthScale = 0.6 + ribbon.depth * 0.5;
+        const depthAlpha = ribbon.alpha * (0.5 + ribbon.depth * 0.8);
 
         ctx.beginPath();
-        ctx.moveTo(0, baseY);
+        
+        const startX = -100 + horizontalDrift;
+        const adjustedBaseY = ribbon.baseY + verticalDrift;
+        
+        ctx.moveTo(startX, adjustedBaseY + ribbon.width);
 
-        for (let x = 0; x <= width; x += 2) {
-          const wave1 = Math.sin(x * frequency + time * 0.6 + layerOffset) * amplitude;
-          const wave2 = Math.sin(x * frequency * 1.3 + time * 0.4 + layerOffset * 1.5) * (amplitude * 0.6);
-          const wave3 = Math.sin(x * frequency * 0.7 + time * 0.9) * (amplitude * 0.4);
-          const y = baseY + wave1 + wave2 + wave3;
+        for (let x = startX; x <= width + 100; x += 3) {
+          const wave1 = Math.sin(x * ribbon.frequency + time * ribbon.speed + ribbon.phase) * ribbon.amplitude * depthScale;
+          const wave2 = Math.sin(x * ribbon.frequency * 1.7 + time * ribbon.speed * 0.6 + ribbon.phase * 1.3) * (ribbon.amplitude * 0.4);
+          const wave3 = Math.sin(x * ribbon.frequency * 0.5 + time * ribbon.speed * 1.3) * (ribbon.amplitude * 0.25);
+          const breathe = Math.sin(time * 0.3 + ribbon.phase) * 10;
+          
+          const y = adjustedBaseY + wave1 + wave2 + wave3 + breathe;
           ctx.lineTo(x, y);
         }
 
-        ctx.lineTo(width, height);
-        ctx.lineTo(0, height);
+        for (let x = width + 100; x >= startX; x -= 3) {
+          const wave1 = Math.sin(x * ribbon.frequency + time * ribbon.speed + ribbon.phase) * ribbon.amplitude * depthScale;
+          const wave2 = Math.sin(x * ribbon.frequency * 1.7 + time * ribbon.speed * 0.6 + ribbon.phase * 1.3) * (ribbon.amplitude * 0.4);
+          const wave3 = Math.sin(x * ribbon.frequency * 0.5 + time * ribbon.speed * 1.3) * (ribbon.amplitude * 0.25);
+          const breathe = Math.sin(time * 0.3 + ribbon.phase) * 10;
+          
+          const y = adjustedBaseY + wave1 + wave2 + wave3 + breathe + ribbon.width * depthScale;
+          ctx.lineTo(x, y);
+        }
+
         ctx.closePath();
 
-        const hue1 = 150 + layer * 20 + Math.sin(time * 0.5 + layer) * 15;
-        const hue2 = 180 + layer * 15 + Math.cos(time * 0.4 + layer) * 20;
-        const alpha = 0.06 - layer * 0.005;
-
-        const gradient = ctx.createLinearGradient(0, baseY - amplitude, 0, baseY + height * 0.25);
-        gradient.addColorStop(0, `hsla(${hue1}, 75%, 75%, ${alpha * 1.8})`);
-        gradient.addColorStop(0.2, `hsla(${hue2}, 65%, 65%, ${alpha * 1.2})`);
-        gradient.addColorStop(0.5, `hsla(${hue1 + 30}, 55%, 55%, ${alpha * 0.6})`);
-        gradient.addColorStop(1, "transparent");
+        const currentHue = ribbon.hue + Math.sin(time * 0.5 + ribbon.phase) * ribbon.hueShift;
+        
+        const gradient = ctx.createLinearGradient(
+          width / 2, adjustedBaseY - ribbon.amplitude,
+          width / 2, adjustedBaseY + ribbon.width + ribbon.amplitude
+        );
+        
+        gradient.addColorStop(0, `hsla(${currentHue}, 70%, 75%, 0)`);
+        gradient.addColorStop(0.2, `hsla(${currentHue}, 75%, 70%, ${depthAlpha * 0.7})`);
+        gradient.addColorStop(0.5, `hsla(${currentHue + 20}, 80%, 65%, ${depthAlpha})`);
+        gradient.addColorStop(0.8, `hsla(${currentHue + 10}, 70%, 60%, ${depthAlpha * 0.5})`);
+        gradient.addColorStop(1, `hsla(${currentHue}, 65%, 55%, 0)`);
 
         ctx.fillStyle = gradient;
+        ctx.globalCompositeOperation = "screen";
         ctx.fill();
+        ctx.globalCompositeOperation = "source-over";
       }
 
-      for (let i = 0; i < 5; i++) {
-        const shimmerX = (width * 0.1) + (width * 0.8) * ((time * 0.08 + i * 0.2) % 1);
-        const shimmerY = height * 0.2 + Math.sin(time * 1.5 + i * 2) * 40;
+      for (let i = 0; i < 8; i++) {
+        const orbPhase = i * 0.785 + time * 0.15;
+        const orbX = width * 0.5 + Math.cos(orbPhase) * (width * 0.4);
+        const orbY = height * 0.25 + Math.sin(orbPhase * 1.3 + i) * (height * 0.15);
+        const orbSize = 100 + Math.sin(time * 0.8 + i * 2) * 50;
+        const orbAlpha = 0.04 + Math.sin(time * 1.2 + i * 1.5) * 0.02;
 
-        const shimmer = ctx.createRadialGradient(shimmerX, shimmerY, 0, shimmerX, shimmerY, 200);
-        shimmer.addColorStop(0, `hsla(${160 + i * 30}, 85%, 85%, ${0.1 + Math.sin(time * 2.5 + i) * 0.05})`);
-        shimmer.addColorStop(0.4, `hsla(${180 + i * 25}, 70%, 75%, 0.03)`);
-        shimmer.addColorStop(1, "transparent");
+        const orb = ctx.createRadialGradient(orbX, orbY, 0, orbX, orbY, orbSize);
+        orb.addColorStop(0, `hsla(${160 + i * 20 + Math.sin(time + i) * 20}, 80%, 85%, ${orbAlpha * 2})`);
+        orb.addColorStop(0.4, `hsla(${175 + i * 15}, 70%, 75%, ${orbAlpha})`);
+        orb.addColorStop(1, "transparent");
 
-        ctx.fillStyle = shimmer;
+        ctx.fillStyle = orb;
+        ctx.globalCompositeOperation = "screen";
         ctx.fillRect(0, 0, width, height);
+        ctx.globalCompositeOperation = "source-over";
       }
 
-      const topGlow = ctx.createRadialGradient(width / 2, -height * 0.2, 0, width / 2, 0, height * 0.8);
-      topGlow.addColorStop(0, `hsla(${155 + Math.sin(time * 0.7) * 15}, 60%, 85%, 0.2)`);
-      topGlow.addColorStop(0.3, `hsla(${175 + Math.cos(time * 0.5) * 15}, 50%, 75%, 0.1)`);
-      topGlow.addColorStop(0.6, `hsla(${190}, 40%, 65%, 0.04)`);
+      const topGlow = ctx.createRadialGradient(width / 2, -height * 0.3, 0, width / 2, 0, height * 0.9);
+      topGlow.addColorStop(0, `hsla(${160 + Math.sin(time * 0.5) * 20}, 65%, 90%, 0.18)`);
+      topGlow.addColorStop(0.2, `hsla(${175 + Math.cos(time * 0.4) * 15}, 55%, 80%, 0.1)`);
+      topGlow.addColorStop(0.5, `hsla(${190}, 45%, 70%, 0.04)`);
       topGlow.addColorStop(1, "transparent");
 
       ctx.fillStyle = topGlow;
+      ctx.globalCompositeOperation = "screen";
       ctx.fillRect(0, 0, width, height);
+      ctx.globalCompositeOperation = "source-over";
 
-      const particleCount = 50;
+      const particleCount = 60;
       for (let i = 0; i < particleCount; i++) {
-        const seed = i * 987.654;
+        const seed = i * 876.543;
         const px = (Math.sin(seed) * 0.5 + 0.5) * width;
-        const baseY = (Math.cos(seed * 2) * 0.5 + 0.5) * height * 0.5;
-        const py = baseY - ((time * 25 + i * 15) % (height * 0.5));
+        const baseParticleY = (Math.cos(seed * 2) * 0.5 + 0.5) * height * 0.6;
+        const py = baseParticleY - ((time * 20 + i * 12) % (height * 0.6));
         const size = 1.5 + Math.sin(seed * 3) * 0.8;
         const alpha = 0.4 + Math.sin(time * 2.5 + seed) * 0.25;
 
