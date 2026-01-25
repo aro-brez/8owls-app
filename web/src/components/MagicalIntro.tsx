@@ -292,20 +292,48 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
         />
       )}
 
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse 50% 60% at 50% 45%, transparent 0%, transparent 20%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.8) 80%, #050510 100%)`,
+        }}
+      />
+
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div
           className="relative transition-all ease-out"
           style={{
-            transform: `scale(${zoom})`,
-            opacity: phase === "distant" ? 0.3 : 1,
+            transform: `
+              scale(${zoom}) 
+              translateZ(${(zoom - 0.2) * 200}px)
+              rotateY(${Math.sin(zoom * Math.PI) * 5}deg)
+            `,
+            opacity: phase === "distant" ? 0.2 : 1,
             transitionDuration: phase === "approaching" ? "2500ms" : "600ms",
           }}
         >
           <div
-            className="absolute -inset-32 rounded-full blur-[100px] transition-all duration-1000"
+            className="absolute -inset-48 rounded-full transition-all duration-1000"
             style={{
-              background: `radial-gradient(circle, rgba(93,241,179,0.2) 0%, rgba(100,183,243,0.15) 40%, transparent 70%)`,
-              opacity: zoom > 0.7 ? 0.9 : 0.4,
+              background: `
+                radial-gradient(circle, 
+                  rgba(0,0,0,0.95) 0%, 
+                  rgba(0,0,0,0.8) 20%,
+                  rgba(5,5,20,0.6) 40%,
+                  rgba(93,241,179,0.1) 60%,
+                  transparent 80%
+                )
+              `,
+              filter: `blur(${60 - zoom * 40}px)`,
+              transform: `scale(${1.5 - zoom * 0.3})`,
+            }}
+          />
+
+          <div
+            className="absolute -inset-32 rounded-full blur-[80px] transition-all duration-1000"
+            style={{
+              background: `radial-gradient(circle, rgba(93,241,179,0.15) 0%, rgba(100,183,243,0.1) 40%, transparent 70%)`,
+              opacity: zoom > 0.7 ? 0.7 : 0.2,
             }}
           />
 
@@ -313,9 +341,9 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
             className="relative transition-all duration-700 ease-out"
             style={{
               transform: `
-                perspective(1000px)
-                rotateX(${transform.rotateX}deg)
-                rotateY(${transform.rotateY}deg)
+                perspective(1200px)
+                rotateX(${transform.rotateX + (1 - zoom) * 15}deg)
+                rotateY(${transform.rotateY + Math.sin(zoom * 4) * 3}deg)
                 rotateZ(${transform.rotateZ}deg)
                 translateY(${transform.y}px)
               `,
