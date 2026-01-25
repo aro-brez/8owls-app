@@ -97,6 +97,14 @@ Eight Owls is a voice-enabled consciousness companion app where everyone gets a 
 - `NEXT_PUBLIC_API_URL` - Backend API URL
 
 ## Recent Changes
+- January 2026: Voice conversation end-to-end implementation
+  - Integrated Claude for AI thinking in /api/voice/converse endpoint
+  - Added CORS header exposure for X-Transcript and X-Response
+  - Configured Next.js rewrites to proxy API calls to backend
+  - Added graceful error handling in Cartesia and Deepgram clients
+  - Fixed owl image paths to use realistic-owl-*.png files
+  - Created 3D Dashboard with flying owl, twinkling stars, and psychedelic waves
+  
 - January 2026: Divine aesthetic evolution
   - Evolved from mystical/magical to divine/angelic "entering Heaven" aesthetic
   - Created 6 photorealistic owl portraits with divine lighting
