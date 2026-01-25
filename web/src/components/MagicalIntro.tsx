@@ -76,21 +76,23 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
     }
 
     const ribbons: AuroraRibbon[] = [];
-    for (let i = 0; i < 15; i++) {
+    const auroraHues = [160, 180, 200, 280, 300, 320, 140, 170];
+    for (let i = 0; i < 18; i++) {
       const depth = Math.random();
+      const baseHue = auroraHues[i % auroraHues.length];
       ribbons.push({
-        baseY: height * (0.05 + Math.random() * 0.35),
-        amplitude: 20 + Math.random() * 60,
-        frequency: 0.0008 + Math.random() * 0.002,
-        speed: 0.2 + Math.random() * 0.6,
+        baseY: height * (0.03 + Math.random() * 0.4),
+        amplitude: 25 + Math.random() * 70,
+        frequency: 0.0006 + Math.random() * 0.002,
+        speed: 0.15 + Math.random() * 0.5,
         phase: Math.random() * Math.PI * 2,
-        hue: 140 + Math.random() * 80,
-        hueShift: 10 + Math.random() * 30,
-        alpha: 0.02 + Math.random() * 0.06,
+        hue: baseHue + (Math.random() - 0.5) * 40,
+        hueShift: 15 + Math.random() * 40,
+        alpha: 0.03 + Math.random() * 0.08,
         depth: depth,
-        width: 80 + Math.random() * 150,
+        width: 100 + Math.random() * 180,
         drift: Math.random() * Math.PI * 2,
-        driftSpeed: 0.1 + Math.random() * 0.3,
+        driftSpeed: 0.08 + Math.random() * 0.25,
       });
     }
     ribbons.sort((a, b) => a.depth - b.depth);

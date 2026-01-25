@@ -25,7 +25,7 @@ interface OwlProps {
 
 function FlyingOwl({ position, speed, wingPhase, scale, delay }: OwlProps) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useLoader(TextureLoader, "/owls/owl-fullbody-1.png");
+  const texture = useLoader(TextureLoader, "/owls/owl-flying.jpg");
   const startTime = useRef(Date.now());
   const initialZ = position[2];
 
@@ -151,13 +151,13 @@ function FallbackOwl({ phase, progress }: { phase: string; progress: number }) {
       style={{ opacity }}
     >
       <img
-        src="/owls/owl-fullbody-1.png"
+        src="/owls/owl-flying.jpg"
         alt="Owl"
         className="transition-all duration-500"
         style={{
           transform: `translateX(${x}%) scale(${scale})`,
-          maxWidth: "60%",
-          filter: "drop-shadow(0 0 40px rgba(255, 215, 0, 0.4))"
+          maxWidth: "70%",
+          filter: "drop-shadow(0 0 60px rgba(147, 112, 219, 0.5)) drop-shadow(0 0 30px rgba(0, 255, 200, 0.3))"
         }}
       />
     </div>
