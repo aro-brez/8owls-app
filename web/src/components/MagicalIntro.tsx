@@ -9,33 +9,43 @@ interface MagicalIntroProps {
 }
 
 type Phase = 
-  | "distant" 
+  | "flock" 
+  | "turning"
   | "approaching" 
-  | "arrived"
+  | "closeUp"
   | "lookDown1"
   | "lookUp1"
-  | "lookDown2"
   | "tiltHead"
-  | "lookDown3"
   | "ready";
 
+interface FlockOwl {
+  id: number;
+  x: number;
+  y: number;
+  scale: number;
+  speed: number;
+  opacity: number;
+}
+
 export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps) {
-  const [phase, setPhase] = useState<Phase>("distant");
+  const [phase, setPhase] = useState<Phase>("flock");
   const [showText, setShowText] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [zoom, setZoom] = useState(0.2);
+  const [zoom, setZoom] = useState(0.08);
+  const [flockOwls, setFlockOwls] = useState<FlockOwl[]>([]);
+  const [mainOwlPos, setMainOwlPos] = useState({ x: 0, y: 0, rotation: 180 });
+  const [showFlock, setShowFlock] = useState(true);
 
   const owlTransforms: Record<Phase, { rotateX: number; rotateY: number; rotateZ: number; y: number }> = {
-    distant: { rotateX: 0, rotateY: 0, rotateZ: 0, y: 0 },
+    flock: { rotateX: 0, rotateY: 180, rotateZ: 0, y: 0 },
+    turning: { rotateX: 0, rotateY: 0, rotateZ: 0, y: 0 },
     approaching: { rotateX: 0, rotateY: 0, rotateZ: 0, y: 0 },
-    arrived: { rotateX: 0, rotateY: 0, rotateZ: 0, y: 0 },
-    lookDown1: { rotateX: 15, rotateY: 0, rotateZ: 0, y: 20 },
-    lookUp1: { rotateX: -5, rotateY: 0, rotateZ: 0, y: -10 },
-    lookDown2: { rotateX: 20, rotateY: 0, rotateZ: 0, y: 25 },
-    tiltHead: { rotateX: 5, rotateY: 0, rotateZ: 15, y: 0 },
-    lookDown3: { rotateX: 18, rotateY: 0, rotateZ: 5, y: 20 },
+    closeUp: { rotateX: 0, rotateY: 0, rotateZ: 0, y: 0 },
+    lookDown1: { rotateX: 8, rotateY: 0, rotateZ: 0, y: 10 },
+    lookUp1: { rotateX: -3, rotateY: 0, rotateZ: 0, y: -5 },
+    tiltHead: { rotateX: 3, rotateY: 0, rotateZ: 8, y: 0 },
     ready: { rotateX: 0, rotateY: 0, rotateZ: 0, y: 0 },
   };
 
@@ -233,22 +243,79 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
   }, []);
 
   useEffect(() => {
-    const sequence = async () => {
-      await new Promise((r) => setTimeout(r, 1000));
-      setPhase("approaching");
+    const initialFlock: FlockOwl[] = [];
+    for (let i = 0; i < 7; i++) {
+      initialFlock.push({
+        id: i,
+        x: -20 - i * 8,
+        y: 30 + (Math.random() - 0.5) * 20,
+        scale: 0.15 + Math.random() * 0.1,
+        speed: 0.8 + Math.random() * 0.4,
+        opacity: 0.4 + Math.random() * 0.3,
+      });
+    }
+    setFlockOwls(initialFlock);
+  }, []);
 
-      let progress = 0;
-      const zoomInterval = setInterval(() => {
-        progress += 0.012;
-        const eased = 1 - Math.pow(1 - progress, 4);
-        setZoom(0.2 + eased * 0.8);
-        if (progress >= 1) clearInterval(zoomInterval);
+  useEffect(() => {
+    if (phase !== "flock" || flockOwls.length === 0) return;
+    
+    const moveInterval = setInterval(() => {
+      setFlockOwls(prev => prev.map(owl => ({
+        ...owl,
+        x: owl.x + owl.speed * 0.5,
+      })));
+    }, 30);
+
+    return () => clearInterval(moveInterval);
+  }, [phase, flockOwls.length]);
+
+  useEffect(() => {
+    const sequence = async () => {
+      await new Promise((r) => setTimeout(r, 500));
+      
+      let flockProgress = 0;
+      const flockInterval = setInterval(() => {
+        flockProgress += 0.015;
+        setFlockOwls(prev => prev.map(owl => ({
+          ...owl,
+          x: owl.x + owl.speed * 1.2,
+        })));
+        if (flockProgress >= 1) clearInterval(flockInterval);
+      }, 30);
+
+      await new Promise((r) => setTimeout(r, 2000));
+      
+      setPhase("turning");
+      setShowFlock(false);
+      
+      let turnProgress = 0;
+      const turnInterval = setInterval(() => {
+        turnProgress += 0.02;
+        const eased = 1 - Math.pow(1 - turnProgress, 3);
+        setMainOwlPos(prev => ({
+          ...prev,
+          rotation: 180 - eased * 180,
+        }));
+        setZoom(0.08 + eased * 0.15);
+        if (turnProgress >= 1) clearInterval(turnInterval);
       }, 25);
 
-      await new Promise((r) => setTimeout(r, 2500));
-      setPhase("arrived");
+      await new Promise((r) => setTimeout(r, 1500));
+      setPhase("approaching");
 
-      await new Promise((r) => setTimeout(r, 800));
+      let approachProgress = 0;
+      const approachInterval = setInterval(() => {
+        approachProgress += 0.008;
+        const eased = 1 - Math.pow(1 - approachProgress, 4);
+        setZoom(0.23 + eased * 2.5);
+        if (approachProgress >= 1) clearInterval(approachInterval);
+      }, 25);
+
+      await new Promise((r) => setTimeout(r, 3500));
+      setPhase("closeUp");
+
+      await new Promise((r) => setTimeout(r, 1000));
       setShowText(true);
 
       await new Promise((r) => setTimeout(r, 1500));
@@ -261,15 +328,9 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
       setPhase("lookUp1");
 
       await new Promise((r) => setTimeout(r, 1200));
-      setPhase("lookDown2");
-
-      await new Promise((r) => setTimeout(r, 1000));
       setPhase("tiltHead");
 
       await new Promise((r) => setTimeout(r, 2000));
-      setPhase("lookDown3");
-
-      await new Promise((r) => setTimeout(r, 1200));
       setPhase("ready");
     };
     sequence();
@@ -312,41 +373,51 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
         }}
       />
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
+      {showFlock && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {flockOwls.map((owl) => (
+            <div
+              key={owl.id}
+              className="absolute transition-all duration-100"
+              style={{
+                left: `${owl.x}%`,
+                top: `${owl.y}%`,
+                transform: `scale(${owl.scale}) rotateY(180deg)`,
+                opacity: owl.opacity,
+              }}
+            >
+              <Image
+                src="/owls/owl-fullbody-1.png"
+                alt=""
+                width={200}
+                height={267}
+                className="w-16 h-20 object-contain"
+                style={{
+                  filter: "drop-shadow(0 0 20px rgba(93,241,179,0.3))",
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden">
         <div
           className="relative transition-all ease-out"
           style={{
             transform: `
               scale(${zoom}) 
-              translateZ(${(zoom - 0.2) * 200}px)
-              rotateY(${Math.sin(zoom * Math.PI) * 5}deg)
+              rotateY(${mainOwlPos.rotation}deg)
             `,
-            opacity: phase === "distant" ? 0.2 : 1,
-            transitionDuration: phase === "approaching" ? "2500ms" : "600ms",
+            opacity: phase === "flock" ? 0.3 : 1,
+            transitionDuration: "800ms",
           }}
         >
           <div
-            className="absolute -inset-48 rounded-full transition-all duration-1000"
+            className="absolute -inset-32 rounded-full blur-[60px] transition-all duration-1000"
             style={{
-              background: `
-                radial-gradient(circle, 
-                  rgba(0,0,0,0.95) 0%, 
-                  rgba(0,0,0,0.8) 20%,
-                  rgba(5,5,20,0.6) 40%,
-                  rgba(93,241,179,0.1) 60%,
-                  transparent 80%
-                )
-              `,
-              filter: `blur(${60 - zoom * 40}px)`,
-              transform: `scale(${1.5 - zoom * 0.3})`,
-            }}
-          />
-
-          <div
-            className="absolute -inset-32 rounded-full blur-[80px] transition-all duration-1000"
-            style={{
-              background: `radial-gradient(circle, rgba(93,241,179,0.15) 0%, rgba(100,183,243,0.1) 40%, transparent 70%)`,
-              opacity: zoom > 0.7 ? 0.7 : 0.2,
+              background: `radial-gradient(circle, rgba(255,250,220,0.2) 0%, rgba(93,241,179,0.15) 40%, transparent 70%)`,
+              opacity: zoom > 1 ? 0.8 : 0.3,
             }}
           />
 
@@ -355,8 +426,8 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
             style={{
               transform: `
                 perspective(1200px)
-                rotateX(${transform.rotateX + (1 - zoom) * 15}deg)
-                rotateY(${transform.rotateY + Math.sin(zoom * 4) * 3}deg)
+                rotateX(${transform.rotateX}deg)
+                rotateY(${transform.rotateY}deg)
                 rotateZ(${transform.rotateZ}deg)
                 translateY(${transform.y}px)
               `,
@@ -367,11 +438,9 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
               alt="Your owl companion"
               width={500}
               height={667}
-              className="w-40 h-56 md:w-52 md:h-72 lg:w-60 lg:h-80 object-contain"
+              className="w-40 h-56 md:w-52 md:h-72 lg:w-60 lg:h-80 object-contain object-top"
               style={{
-                filter: `drop-shadow(0 0 ${40 + zoom * 50}px rgba(93,241,179,0.5)) drop-shadow(0 0 ${70 + zoom * 80}px rgba(100,183,243,0.3))`,
-                maskImage: "radial-gradient(ellipse 90% 95% at 50% 50%, black 60%, transparent 90%)",
-                WebkitMaskImage: "radial-gradient(ellipse 90% 95% at 50% 50%, black 60%, transparent 90%)",
+                filter: `drop-shadow(0 0 ${20 + zoom * 30}px rgba(255,250,220,0.4)) drop-shadow(0 0 ${40 + zoom * 60}px rgba(93,241,179,0.3))`,
               }}
               priority
             />
@@ -422,7 +491,7 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
             <button
               onClick={onComplete}
               className={`group relative px-16 py-5 rounded-full overflow-hidden transition-all duration-700 hover:scale-105 ${
-                phase === "lookDown1" || phase === "lookDown2" || phase === "lookDown3"
+                phase === "lookDown1" || phase === "lookUp1"
                   ? "ring-2 ring-amber-200/40 scale-105"
                   : ""
               }`}
@@ -430,7 +499,7 @@ export default function MagicalIntro({ onComplete, videoSrc }: MagicalIntroProps
               <div 
                 className="absolute inset-0 transition-all duration-700"
                 style={{
-                  background: phase === "lookDown1" || phase === "lookDown2" || phase === "lookDown3"
+                  background: phase === "lookDown1" || phase === "lookUp1"
                     ? "linear-gradient(135deg, rgba(255,250,220,0.25) 0%, rgba(255,252,240,0.15) 100%)"
                     : "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,252,240,0.05) 100%)",
                   backdropFilter: "blur(12px)",
