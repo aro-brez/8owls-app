@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import AuroraVisualizer from "./AuroraVisualizer";
-import OwlAvatar, { OwlAvatarPicker } from "./OwlAvatar";
+import RealisticOwl, { RealisticOwlPicker } from "./RealisticOwl";
+import { DivineParticles } from "./VideoBackground";
 import { onboardUser, playAudio, speak } from "@/lib/api";
 
 interface OnboardingProps {
@@ -220,8 +221,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   };
 
   return (
-    <div className="min-h-screen gradient-mystical flex flex-col items-center justify-center p-6 overflow-hidden">
-      <div className="star-field opacity-20" />
+    <div className="min-h-screen gradient-mystical flex flex-col items-center justify-center p-6 overflow-hidden relative">
+      <DivineParticles />
       
       <div className="relative z-10 w-full max-w-md mx-auto">
         {error && (
@@ -233,7 +234,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         {step === "aha1_intro" && (
           <div className={`text-center space-y-8 transition-all duration-700 ${textVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <div className="animate-float">
-              <MysticalOwl size="xl" glowing={true} />
+              <RealisticOwl owlId={0} size="xl" glowing={true} interactive={true} />
             </div>
             
             <div className="space-y-6">
@@ -263,7 +264,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         {step === "aha2_listening" && (
           <div className={`text-center space-y-8 transition-all duration-700 ${textVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <div className="animate-breathe">
-              <MysticalOwl size="xl" glowing={true} />
+              <RealisticOwl owlId={0} size="xl" glowing={true} interactive={true} />
             </div>
 
             <div className="space-y-6">
@@ -299,11 +300,15 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
         {step === "aha3_recording" && (
           <div className={`text-center space-y-8 transition-all duration-700 ${textVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <div className="animate-glow">
-              <MysticalOwl size="xl" listening={true} audioLevel={audioLevel} />
-            </div>
+            <RealisticOwl 
+              owlId={0} 
+              size="xl" 
+              listening={true} 
+              audioLevel={audioLevel}
+              glowing={true}
+            />
 
-            <AuroraVisualizerDark audioLevel={audioLevel} isListening={true} />
+            <AuroraVisualizer audioLevel={audioLevel} isListening={true} theme="dark" />
 
             <div className="space-y-4">
               <p className="text-white/40 text-sm tracking-[0.3em] uppercase">
@@ -352,7 +357,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         {step === "aha4_heard" && (
           <div className={`text-center space-y-8 transition-all duration-700 ${textVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <div className="animate-breathe">
-              <MysticalOwl size="xl" glowing={true} />
+              <RealisticOwl owlId={0} size="xl" glowing={true} />
             </div>
 
             <div className="space-y-6">
@@ -440,7 +445,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               </p>
             </div>
 
-            <OwlAvatarPickerDark
+            <RealisticOwlPicker
               selectedId={selectedAvatar}
               onSelect={setSelectedAvatar}
             />
@@ -453,13 +458,19 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
         {step === "aha7_awakening" && (
           <div className={`text-center space-y-8 transition-all duration-700 ${textVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-            <div className={isProcessing ? "animate-pulse" : "animate-glow"}>
-              <MysticalOwl size="xl" glowing={true} avatar={selectedAvatar} />
+            <div className={isProcessing ? "animate-pulse" : ""}>
+              <RealisticOwl 
+                owlId={selectedAvatar} 
+                size="xl" 
+                glowing={true}
+                speaking={isSpeaking}
+              />
             </div>
 
-            <AuroraVisualizerDark
+            <AuroraVisualizer
               isProcessing={isProcessing}
               isSpeaking={isSpeaking}
+              theme="dark"
             />
 
             <div className="space-y-4">

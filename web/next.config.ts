@@ -2,11 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: [
-    "https://*.replit.dev",
-    "https://*.repl.co",
-    "https://*.spock.replit.dev",
-    "http://localhost:5000",
-    "http://127.0.0.1:5000",
+    "localhost",
+    "127.0.0.1",
+    "*.replit.dev",
+    "*.spock.replit.dev",
+    "*.repl.co",
   ],
   async headers() {
     return [
@@ -16,9 +16,18 @@ const nextConfig: NextConfig = {
           { key: "Access-Control-Allow-Origin", value: "*" },
           { key: "Access-Control-Allow-Methods", value: "GET, POST, PUT, DELETE, OPTIONS" },
           { key: "Access-Control-Allow-Headers", value: "*" },
+          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
         ],
       },
     ];
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
 };
 
