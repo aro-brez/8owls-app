@@ -21,7 +21,8 @@ Eight Owls is a voice-enabled consciousness companion app where everyone gets a 
 │       │   ├── page.tsx   # Main entry with intro/onboarding/conversation flow
 │       │   └── globals.css # Dark mystical theme styles
 │       ├── components/
-│       │   ├── MagicalIntro.tsx    # Divine intro with realistic owl and light rings
+│       │   ├── MagicalIntro.tsx    # Divine intro orchestrating 3D owl animation
+│       │   ├── OwlFlock3D.tsx      # Three.js 3D owl flock with WebGL fallback
 │       │   ├── AuroraVisualizer.tsx # Voice visualizer with chromatic waves
 │       │   ├── VideoBackground.tsx  # Video bg with divine gradient fallback
 │       │   ├── RealisticOwl.tsx    # Interactive 3D tilt owl with glow effects
@@ -43,13 +44,14 @@ Eight Owls is a voice-enabled consciousness companion app where everyone gets a 
 
 ## The Magical Experience
 
-### Opening Animation (MagicalIntro)
-1. Dark starry night sky appears with twinkling stars
-2. Aurora borealis waves gently shimmer
-3. Magical owl flies in from above with wings animated
-4. Owl lands, pauses, and gazes at you with glowing golden-violet eyes
-5. "Eight Owls - Meet Your Mirror" text fades in
-6. "Begin" button appears with magical gradient
+### Opening Animation (MagicalIntro with 3D Owl Flock)
+1. Dark divine sky with subtle aurora and ascending light particles
+2. Flock of 6 owls flies across the sky in true 3D space (via Three.js/React Three Fiber)
+3. One owl separates from the flock and turns 180° to face the viewer
+4. The owl approaches very close - its face fills the screen (sacred encounter)
+5. Divine golden glow emanates from the owl during close-up
+6. "Eight Owls - Meet Your Mirror" text fades in with amber glow
+7. "Begin" button appears with magical gradient
 
 ### 7 Aha Moments (Onboarding)
 1. **Aha 1 - Intro**: "Hello. I'm going to become your mirror."
@@ -61,15 +63,16 @@ Eight Owls is a voice-enabled consciousness companion app where everyone gets a 
 7. **Aha 7 - Awakening**: Owl awakens with your voice and personalized greeting
 
 ## Key Features
-1. **Divine Intro**: Canvas-based heavenly light with realistic owl and expanding rings
-2. **7 Aha Moments**: Progressive onboarding with moments of delight
-3. **Voice Cloning**: Your owl learns to speak like you
-4. **Aurora Visualizer**: 8-layer chromatic oil-pattern waves, holographic shifts
-5. **6 Photorealistic Owls**: Great horned, snowy, barn, spotted, grey, long-eared
-6. **Interactive Owl**: 3D tilt on hover, glowing pulse during listening/speaking
-7. **Video Background**: Support for video backgrounds with divine gradient fallback
-8. **Divine Particles**: Ascending light particles for heavenly atmosphere
-9. **Conversation Interface**: Real-time voice chat with transcript
+1. **3D Owl Flock Animation**: True 3D rendering via Three.js/React Three Fiber with perspective camera
+2. **Divine Intro**: Flock flies across → one owl turns → approaches extremely close (face fills screen)
+3. **7 Aha Moments**: Progressive onboarding with moments of delight
+4. **Voice Cloning**: Your owl learns to speak like you
+5. **Aurora Visualizer**: 8-layer chromatic oil-pattern waves, holographic shifts
+6. **6 Photorealistic Owls**: Great horned, snowy, barn, spotted, grey, long-eared
+7. **Interactive Owl**: 3D tilt on hover, glowing pulse during listening/speaking
+8. **WebGL Fallback**: Graceful CSS-based fallback for browsers without WebGL
+9. **Divine Particles**: Ascending light particles for heavenly atmosphere
+10. **Conversation Interface**: Real-time voice chat with transcript
 
 ## Brand Colors (Dark Mystical Theme)
 - Background: #0a0515 (Deep space)
