@@ -13,15 +13,18 @@ Eight Owls is a voice-enabled consciousness companion app where everyone gets a 
 ```
 /
 ├── web/                    # Next.js frontend
+│   ├── public/
+│   │   └── owls/          # 6 photorealistic owl portraits
 │   └── src/
 │       ├── app/           # Pages and layouts
 │       │   ├── layout.tsx
 │       │   ├── page.tsx   # Main entry with intro/onboarding/conversation flow
 │       │   └── globals.css # Dark mystical theme styles
 │       ├── components/
-│       │   ├── MagicalIntro.tsx    # Owl flight-in animation with starry sky
-│       │   ├── AuroraVisualizer.tsx # Voice visualizer (light theme)
-│       │   ├── OwlAvatar.tsx       # Owl avatars with gradient styles
+│       │   ├── MagicalIntro.tsx    # Divine intro with realistic owl and light rings
+│       │   ├── AuroraVisualizer.tsx # Voice visualizer with chromatic waves
+│       │   ├── VideoBackground.tsx  # Video bg with divine gradient fallback
+│       │   ├── RealisticOwl.tsx    # Interactive 3D tilt owl with glow effects
 │       │   ├── Onboarding.tsx      # 7 aha moments journey
 │       │   └── Conversation.tsx    # Main chat interface
 │       └── lib/
@@ -58,12 +61,15 @@ Eight Owls is a voice-enabled consciousness companion app where everyone gets a 
 7. **Aha 7 - Awakening**: Owl awakens with your voice and personalized greeting
 
 ## Key Features
-1. **Magical Intro**: Canvas-based starry sky with owl flight animation
+1. **Divine Intro**: Canvas-based heavenly light with realistic owl and expanding rings
 2. **7 Aha Moments**: Progressive onboarding with moments of delight
 3. **Voice Cloning**: Your owl learns to speak like you
-4. **Aurora Visualizer**: Responds to voice in dark and light themes
-5. **12+ Owl Avatars**: Gradient-styled with mystical glow effects
-6. **Conversation Interface**: Real-time voice chat with transcript
+4. **Aurora Visualizer**: 8-layer chromatic oil-pattern waves, holographic shifts
+5. **6 Photorealistic Owls**: Great horned, snowy, barn, spotted, grey, long-eared
+6. **Interactive Owl**: 3D tilt on hover, glowing pulse during listening/speaking
+7. **Video Background**: Support for video backgrounds with divine gradient fallback
+8. **Divine Particles**: Ascending light particles for heavenly atmosphere
+9. **Conversation Interface**: Real-time voice chat with transcript
 
 ## Brand Colors (Dark Mystical Theme)
 - Background: #0a0515 (Deep space)
@@ -88,16 +94,19 @@ Eight Owls is a voice-enabled consciousness companion app where everyone gets a 
 - `NEXT_PUBLIC_API_URL` - Backend API URL
 
 ## Recent Changes
-- January 2026: Magical intro and 7 aha moments
-  - Created MagicalIntro.tsx with owl flight animation
-  - Redesigned Onboarding.tsx with dark mystical theme
-  - Added starry sky canvas with twinkling stars
-  - Implemented owl gaze animation with glowing eyes
-  - Built 7-step onboarding journey with smooth transitions
+- January 2026: Divine aesthetic evolution
+  - Evolved from mystical/magical to divine/angelic "entering Heaven" aesthetic
+  - Created 6 photorealistic owl portraits with divine lighting
+  - Built RealisticOwl.tsx with interactive 3D tilt effect and glow states
+  - Added VideoBackground.tsx for video support with DivineParticles overlay
+  - Updated MagicalIntro with divine light rings and realistic owl
+  - Upgraded AuroraVisualizer to Apple/Siri quality chromatic waves
+  - Integrated RealisticOwlPicker for avatar selection
 
 ## The Vibe
-- **Magical** - Harry Potter-inspired enchantment
+- **Divine** - Like entering Heaven, oneness with God
+- **Angelic** - Pure, peaceful, transcendent
 - **Ethereal** - Light, floating, breathes
-- **Divine** - Sacred, attention respected
+- **Peaceful Psychedelic** - Expansive without overwhelm
 - **Ancient Future** - Timeless mystical design
-- **Pure Magic** - Wow from first moment
+- **Pure Light** - Heavenly glow from first moment
