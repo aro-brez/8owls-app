@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+:root {
+  --mindaro-green: #E3F98A;
+  --cold-violet: #8F6CF3;
+  --azure: #64B7F3;
+  --pink: #F361D3;
+  --turquoise: #5DF1B3;
+  --silver: #EAEDEE;
+  
+  --background: #FFFFFF;
+  --foreground: #0a0a0a;
+}
+
+@theme inline {
+  --color-mindaro: #E3F98A;
+  --color-violet: #8F6CF3;
+  --color-azure: #64B7F3;
+  --color-pink: #F361D3;
+  --color-turquoise: #5DF1B3;
+  --color-silver: #EAEDEE;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  min-height: 100vh;
+}
+
+.gradient-ethereal {
+  background: linear-gradient(180deg, #E5B7FA 0%, #EBFFFE 30%, #FFFFFF 100%);
+}
+
+.gradient-divine {
+  background: linear-gradient(180deg, #6CD3F3 0%, #9DF7EC 30%, #FFFFFF 100%);
+}
+
+.gradient-aurora {
+  background: linear-gradient(180deg, #B7CEFA 0%, #EBEBFF 30%, #FFFFFF 100%);
+}
+
+.gradient-cosmic {
+  background: linear-gradient(135deg, #8F6CF3 0%, #64B7F3 50%, #5DF1B3 100%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #8F6CF3, #64B7F3, #5DF1B3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-primary {
+  background-color: var(--mindaro-green);
+  color: #0a0a0a;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(227, 249, 138, 0.4);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #0a0a0a;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid #0a0a0a;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.text-bubble {
+  background-color: white;
+  border: 1px solid #0a0a0a;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: scale(1.02);
+    opacity: 1;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px);
+  }
+  50% { 
+    transform: translateY(-10px);
+  }
+}
+
+.backdrop-ethereal {
+  backdrop-filter: blur(20px);
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.mic-button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8F6CF3, #64B7F3);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(143, 108, 243, 0.4);
+}
+
+.mic-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(143, 108, 243, 0.5);
+}
+
+.mic-button.recording {
+  animation: pulse-recording 1.5s ease-in-out infinite;
+  background: linear-gradient(135deg, #F361D3, #8F6CF3);
+}
+
+@keyframes pulse-recording {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(243, 97, 211, 0.4);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 8px 40px rgba(243, 97, 211, 0.6);
+  }
+}
+
+.progress-bar {
+  height: 4px;
+  background: var(--silver);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8F6CF3, #64B7F3, #5DF1B3);
+  transition: width 0.3s ease;
+}
