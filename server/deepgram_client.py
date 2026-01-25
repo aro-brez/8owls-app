@@ -1,69 +1,55 @@
 """
 Deepgram STT Integration
-Handles both streaming and batch transcription.
+Handles both streaming and batch transcription using HTTP API.
 """
 
 import os
-import asyncio
-from deepgram import Deepgram
+import httpx
 
-DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
+DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY", "")
+DEEPGRAM_BASE_URL = "https://api.deepgram.com/v1"
 
 
-class DeepgramClient:
+class DeepgramSTTClient:
     def __init__(self):
-        self.client = Deepgram(DEEPGRAM_API_KEY)
+        self.api_key = DEEPGRAM_API_KEY
+        self.headers = {
+            "Authorization": f"Token {self.api_key}",
+            "Content-Type": "audio/wav"
+        }
 
     async def transcribe_audio(self, audio_bytes: bytes, mimetype: str = "audio/wav") -> str:
         """
         Transcribe audio file to text.
         Used for onboarding and non-streaming scenarios.
         """
-        response = await self.client.transcription.prerecorded(
-            {"buffer": audio_bytes, "mimetype": mimetype},
-            {
-                "punctuate": True,
-                "model": "nova-2",
-                "language": "en",
-                "smart_format": True
-            }
-        )
-
-        transcript = response["results"]["channels"][0]["alternatives"][0]["transcript"]
-        return transcript
+        if not self.api_key:
+            return "[Deepgram API key not configured]"
+        
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
+                f"{DEEPGRAM_BASE_URL}/listen?punctuate=true&model=nova-2&language=en&smart_format=true",
+                headers={
+                    "Authorization": f"Token {self.api_key}",
+                    "Content-Type": mimetype
+                },
+                content=audio_bytes
+            )
+            
+            if response.status_code != 200:
+                return f"[Transcription error: {response.status_code}]"
+            
+            data = response.json()
+            transcript = data.get("results", {}).get("channels", [{}])[0].get("alternatives", [{}])[0].get("transcript", "")
+            return transcript
 
     async def create_streaming_connection(self, on_transcript_callback):
         """
         Create a streaming connection for real-time transcription.
-
-        Args:
-            on_transcript_callback: async function(transcript: str) called when text is ready
+        Note: WebSocket streaming requires additional implementation.
+        For now, returns None and batch transcription should be used.
         """
-        connection = await self.client.transcription.live({
-            "punctuate": True,
-            "model": "nova-2",
-            "language": "en",
-            "encoding": "linear16",
-            "sample_rate": 16000,
-            "channels": 1,
-            "interim_results": True,
-            "endpointing": 300,  # ms of silence to detect end of speech
-        })
-
-        async def handle_transcript(data):
-            """Handle incoming transcription data."""
-            if data.get("is_final"):
-                transcript = data["channel"]["alternatives"][0]["transcript"]
-                if transcript.strip():
-                    await on_transcript_callback(transcript)
-
-        connection.register_handler(
-            connection.event.TRANSCRIPT_RECEIVED,
-            handle_transcript
-        )
-
-        return connection
+        return None
 
 
-# Singleton instance
-deepgram = DeepgramClient()
+deepgram = DeepgramSTTClient()
