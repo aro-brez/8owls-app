@@ -36,26 +36,35 @@ class CartesiaClient:
         Returns:
             Audio bytes (WAV format)
         """
+        if not self.api_key:
+            return b""
+        
+        actual_voice_id = voice_id if voice_id != "default" else "a0e99841-438c-4a64-b679-ae501e7d6091"
+        
         async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                f"{CARTESIA_BASE_URL}/tts/bytes",
-                headers=self.headers,
-                json={
-                    "text": text,
-                    "voice": {
-                        "mode": "id",
-                        "id": voice_id
-                    },
-                    "model_id": model_id,
-                    "output_format": {
-                        "container": "wav",
-                        "encoding": "pcm_f32le",
-                        "sample_rate": 24000
+            try:
+                response = await client.post(
+                    f"{CARTESIA_BASE_URL}/tts/bytes",
+                    headers=self.headers,
+                    json={
+                        "text": text,
+                        "voice": {
+                            "mode": "id",
+                            "id": actual_voice_id
+                        },
+                        "model_id": model_id,
+                        "output_format": {
+                            "container": "wav",
+                            "encoding": "pcm_f32le",
+                            "sample_rate": 24000
+                        }
                     }
-                }
-            )
-            response.raise_for_status()
-            return response.content
+                )
+                response.raise_for_status()
+                return response.content
+            except Exception as e:
+                print(f"Cartesia TTS error: {e}")
+                return b""
 
     async def clone_voice(
         self,

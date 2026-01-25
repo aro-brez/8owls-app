@@ -1,34 +1,34 @@
 "use client";
 
-import { useRef, useEffect, useState, Suspense } from "react";
+import { useRef, useEffect, useState, Suspense, useMemo } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
 import * as THREE from "three";
 
 const owlImages = [
-  "/owls/great-horned-owl.png",
-  "/owls/snowy-owl.png",
-  "/owls/barn-owl.png",
-  "/owls/spotted-owl.png",
-  "/owls/grey-owl.png",
-  "/owls/long-eared-owl.png",
+  "/owls/realistic-owl-1.png",
+  "/owls/realistic-owl-2.png",
+  "/owls/realistic-owl-3.png",
+  "/owls/realistic-owl-4.png",
+  "/owls/realistic-owl-5.png",
+  "/owls/realistic-owl-6.png",
 ];
 
 function TwinklingStars() {
   const starsRef = useRef<THREE.Points>(null);
   const count = 200;
   
-  const positions = new Float32Array(count * 3);
-  const scales = new Float32Array(count);
-  const phases = new Float32Array(count);
-  
-  for (let i = 0; i < count; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 20;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 15;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 10 - 5;
-    scales[i] = Math.random() * 0.5 + 0.5;
-    phases[i] = Math.random() * Math.PI * 2;
-  }
+  const geometry = useMemo(() => {
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 20;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 15;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 10 - 5;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    return geo;
+  }, []);
 
   useFrame((state) => {
     if (!starsRef.current) return;
@@ -36,9 +36,6 @@ function TwinklingStars() {
     const material = starsRef.current.material as THREE.PointsMaterial;
     material.opacity = 0.6 + Math.sin(time * 0.5) * 0.2;
   });
-
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
   return (
     <points ref={starsRef} geometry={geometry}>

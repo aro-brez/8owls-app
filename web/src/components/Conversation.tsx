@@ -33,12 +33,12 @@ interface Message {
 }
 
 const owlImages = [
-  "/owls/great-horned-owl.png",
-  "/owls/snowy-owl.png",
-  "/owls/barn-owl.png",
-  "/owls/spotted-owl.png",
-  "/owls/grey-owl.png",
-  "/owls/long-eared-owl.png",
+  "/owls/realistic-owl-1.png",
+  "/owls/realistic-owl-2.png",
+  "/owls/realistic-owl-3.png",
+  "/owls/realistic-owl-4.png",
+  "/owls/realistic-owl-5.png",
+  "/owls/realistic-owl-6.png",
 ];
 
 function FloatingOwl({ avatarId, name, isListening, isSpeaking }: { 

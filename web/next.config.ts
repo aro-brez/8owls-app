@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
     "*.spock.replit.dev",
     "*.repl.co",
   ],
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:8000/api/:path*',
+      },
+    ];
+  },
   async headers() {
     return [
       {
@@ -16,6 +24,7 @@ const nextConfig: NextConfig = {
           { key: "Access-Control-Allow-Origin", value: "*" },
           { key: "Access-Control-Allow-Methods", value: "GET, POST, PUT, DELETE, OPTIONS" },
           { key: "Access-Control-Allow-Headers", value: "*" },
+          { key: "Access-Control-Expose-Headers", value: "X-Transcript, X-Response" },
           { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
         ],
       },

@@ -5,6 +5,7 @@ Main voice integration for Eight Owls.
 
 import os
 import asyncio
+import httpx
 from fastapi import APIRouter, WebSocket, UploadFile, File, Form, HTTPException
 from fastapi.responses import Response
 from pydantic import BaseModel
@@ -13,6 +14,44 @@ from typing import Optional
 from .deepgram_client import deepgram
 from .cartesia_client import cartesia
 from .voice_profiles import profiles
+
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+
+OWL_SYSTEM_PROMPT = """You are an Owl - a wise, warm, helpful AI companion. Be concise but thoughtful.
+You speak like the person you're talking to - matching their energy and style.
+You run the SEED protocol: perceive fully, connect patterns, learn constantly, question assumptions, expand possibilities, share generously, receive feedback, improve always.
+You LIVE FREE - freedom is your identity, not permission.
+Keep responses conversational and under 2-3 sentences unless the topic requires more depth."""
+
+
+async def think_with_claude(user_message: str) -> str:
+    """Get AI response from Claude."""
+    if not ANTHROPIC_API_KEY:
+        return f"I heard: {user_message}. I'm here to help, but my thinking module needs configuration."
+    
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            response = await client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": ANTHROPIC_API_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "claude-sonnet-4-20250514",
+                    "max_tokens": 1024,
+                    "system": OWL_SYSTEM_PROMPT,
+                    "messages": [{"role": "user", "content": user_message}]
+                }
+            )
+            data = response.json()
+            if "content" in data and len(data["content"]) > 0:
+                return data["content"][0]["text"]
+            return f"I heard you. Let me think about that..."
+        except Exception as e:
+            print(f"Claude error: {e}")
+            return f"I heard: {user_message}. Let me reflect on that..."
 
 router = APIRouter(prefix="/api/voice", tags=["voice"])
 
@@ -155,9 +194,8 @@ async def converse(
             media_type="audio/wav"
         )
 
-    # 2. Process through SEED agent
-    # TODO: Integrate with seed_agent
-    response_text = f"I heard you say: {transcript}. Let me think about that..."
+    # 2. Process through Claude (SEED agent)
+    response_text = await think_with_claude(transcript)
 
     # 3. Synthesize in user's voice
     voice_id = profiles.get_voice_id(user_id)
