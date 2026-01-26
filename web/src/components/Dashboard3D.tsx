@@ -50,7 +50,7 @@ function TwinklingStars() {
   );
 }
 
-function PsychedelicWaves() {
+function MagicalOcean() {
   const meshRef = useRef<THREE.Mesh>(null);
   
   useFrame((state) => {
@@ -74,29 +74,44 @@ function PsychedelicWaves() {
     void main() {
       vec2 uv = vUv;
       
-      float wave1 = sin(uv.x * 3.0 + uTime * 0.5) * 0.5 + 0.5;
-      float wave2 = sin(uv.y * 4.0 - uTime * 0.3) * 0.5 + 0.5;
-      float wave3 = sin((uv.x + uv.y) * 2.0 + uTime * 0.4) * 0.5 + 0.5;
+      // Multiple wave layers for rich ocean effect
+      float wave1 = sin(uv.x * 4.0 + uTime * 0.4) * 0.5 + 0.5;
+      float wave2 = sin(uv.x * 6.0 - uTime * 0.5 + uv.y * 2.0) * 0.5 + 0.5;
+      float wave3 = sin((uv.x * 3.0 + uv.y * 1.5) + uTime * 0.3) * 0.5 + 0.5;
+      float wave4 = sin(uv.x * 8.0 + uTime * 0.6) * 0.5 + 0.5;
+      float wave5 = cos(uv.x * 5.0 - uTime * 0.35 + uv.y) * 0.5 + 0.5;
       
-      vec3 color1 = vec3(0.56, 0.42, 0.95); // Purple
-      vec3 color2 = vec3(0.39, 0.72, 0.95); // Cyan
+      // Aurora colors - cyan, purple, pink, turquoise, gold
+      vec3 color1 = vec3(0.39, 0.72, 0.95); // Cyan
+      vec3 color2 = vec3(0.56, 0.42, 0.95); // Purple
       vec3 color3 = vec3(0.95, 0.38, 0.83); // Pink
       vec3 color4 = vec3(0.36, 0.95, 0.70); // Turquoise
+      vec3 color5 = vec3(0.89, 0.98, 0.54); // Gold/Mindaro
       
+      // Blend colors in waves
       vec3 finalColor = mix(color1, color2, wave1);
-      finalColor = mix(finalColor, color3, wave2 * 0.5);
-      finalColor = mix(finalColor, color4, wave3 * 0.3);
+      finalColor = mix(finalColor, color3, wave2 * 0.6);
+      finalColor = mix(finalColor, color4, wave3 * 0.4);
+      finalColor = mix(finalColor, color5, wave4 * 0.2);
       
-      float alpha = 0.15 + wave1 * 0.1 + wave2 * 0.05;
-      alpha *= smoothstep(0.0, 0.3, uv.y) * smoothstep(1.0, 0.5, uv.y);
+      // Add shimmer
+      float shimmer = sin(uv.x * 20.0 + uTime * 2.0) * sin(uv.y * 15.0 - uTime * 1.5) * 0.1;
+      finalColor += shimmer;
+      
+      // Gradient: stronger at bottom, fades toward top (horizon)
+      float verticalFade = smoothstep(1.0, 0.0, uv.y);
+      float horizonGlow = exp(-pow((uv.y - 0.85) * 4.0, 2.0)) * 0.4;
+      
+      float alpha = (0.6 + wave1 * 0.2 + wave5 * 0.1) * verticalFade + horizonGlow;
+      alpha = clamp(alpha, 0.0, 0.9);
       
       gl_FragColor = vec4(finalColor, alpha);
     }
   `;
 
   return (
-    <mesh ref={meshRef} position={[0, 2, -8]}>
-      <planeGeometry args={[25, 12]} />
+    <mesh ref={meshRef} position={[0, -4, -2]} rotation={[-0.3, 0, 0]}>
+      <planeGeometry args={[30, 20]} />
       <shaderMaterial
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
@@ -115,14 +130,16 @@ function FlyingOwl3D({ avatarId, isLanding, isListening, isSpeaking }: {
   isSpeaking: boolean;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useLoader(TextureLoader, "/owls/owl-flying.jpg");
+  const glowRef = useRef<THREE.Mesh>(null);
+  const texture = useLoader(TextureLoader, owlImages[avatarId - 1] || owlImages[0]);
   const [phase, setPhase] = useState<"flying" | "landing" | "idle">("flying");
-  const startTime = useRef(Date.now());
+  
+  const owlMaterial = useMemo(() => createOwlMaterial(texture), [texture]);
   
   useEffect(() => {
     if (isLanding) {
       setTimeout(() => setPhase("landing"), 500);
-      setTimeout(() => setPhase("idle"), 2500);
+      setTimeout(() => setPhase("idle"), 3000);
     }
   }, [isLanding]);
 
@@ -130,69 +147,232 @@ function FlyingOwl3D({ avatarId, isLanding, isListening, isSpeaking }: {
     if (!meshRef.current) return;
     const time = state.clock.elapsedTime;
     
+    owlMaterial.uniforms.uTime.value = time;
+    
     if (phase === "flying") {
-      meshRef.current.position.x = -8 + time * 2;
-      meshRef.current.position.y = Math.sin(time * 3) * 0.5 + 1;
-      meshRef.current.position.z = -3;
-      meshRef.current.rotation.z = Math.sin(time * 4) * 0.1;
+      meshRef.current.position.x = -6 + time * 1.2;
+      meshRef.current.position.y = Math.sin(time * 2) * 0.6 + 1.2;
+      meshRef.current.position.z = -1;
+      meshRef.current.rotation.z = Math.sin(time * 3) * 0.12;
+      meshRef.current.scale.setScalar(2.5 + Math.sin(time * 2) * 0.15);
       
       if (meshRef.current.position.x > 0) {
         setPhase("landing");
       }
     } else if (phase === "landing") {
-      meshRef.current.position.x *= 0.95;
-      meshRef.current.position.y *= 0.97;
-      meshRef.current.position.z = meshRef.current.position.z * 0.95 + 0.5 * 0.05;
+      meshRef.current.position.x *= 0.92;
+      meshRef.current.position.y = meshRef.current.position.y * 0.95 + (-0.3) * 0.05;
+      meshRef.current.position.z = meshRef.current.position.z * 0.95 + 0 * 0.05;
       meshRef.current.rotation.z *= 0.9;
       
-      const scale = meshRef.current.scale.x;
-      if (scale < 2.5) {
-        meshRef.current.scale.setScalar(scale * 1.02);
-      }
-    } else {
-      meshRef.current.position.y = Math.sin(time * 1.5) * 0.15;
-      meshRef.current.rotation.z = Math.sin(time * 0.8) * 0.03;
-      
-      const pulseScale = isListening ? 2.7 : isSpeaking ? 2.6 : 2.5;
+      const targetScale = 4.0;
       const currentScale = meshRef.current.scale.x;
-      meshRef.current.scale.setScalar(currentScale + (pulseScale - currentScale) * 0.1);
+      meshRef.current.scale.setScalar(currentScale + (targetScale - currentScale) * 0.03);
+    } else {
+      meshRef.current.position.y = -0.3 + Math.sin(time * 0.8) * 0.15;
+      meshRef.current.rotation.z = Math.sin(time * 0.5) * 0.02;
+      
+      const baseScale = 4.0;
+      const pulseScale = isListening ? baseScale + 0.4 : isSpeaking ? baseScale + 0.2 : baseScale;
+      const pulse = Math.sin(time * 2.5) * 0.1;
+      meshRef.current.scale.setScalar(pulseScale + (isListening || isSpeaking ? pulse : 0));
+    }
+    
+    if (glowRef.current) {
+      const glowMat = glowRef.current.material as THREE.ShaderMaterial;
+      glowMat.uniforms.uTime.value = time;
+      const intensity = phase === "idle" ? (isListening ? 1.8 : isSpeaking ? 1.4 : 0.8) : 0.5;
+      glowMat.uniforms.uIntensity.value = intensity;
+      glowRef.current.position.copy(meshRef.current.position);
+      glowRef.current.position.z -= 0.5;
+      glowRef.current.scale.setScalar(meshRef.current.scale.x * 1.5);
     }
   });
 
+  const glowVertexShader = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+
+  const glowFragmentShader = `
+    uniform float uTime;
+    uniform float uIntensity;
+    varying vec2 vUv;
+    
+    void main() {
+      vec2 center = vUv - 0.5;
+      float dist = length(center);
+      float glow = exp(-dist * 3.0) * uIntensity;
+      
+      vec3 color1 = vec3(0.56, 0.42, 0.95);
+      vec3 color2 = vec3(0.39, 0.72, 0.95);
+      vec3 color3 = vec3(0.89, 0.98, 0.54);
+      
+      float t = sin(uTime * 0.5) * 0.5 + 0.5;
+      vec3 glowColor = mix(mix(color1, color2, t), color3, sin(uTime * 0.3) * 0.3 + 0.3);
+      
+      gl_FragColor = vec4(glowColor, glow * 0.6);
+    }
+  `;
+
   return (
-    <mesh ref={meshRef} position={[-8, 1, -3]} scale={1.2}>
-      <planeGeometry args={[3, 2.5]} />
-      <meshBasicMaterial map={texture} transparent alphaTest={0.1} />
-    </mesh>
+    <>
+      <mesh ref={glowRef} position={[-6, 1.2, -1.5]}>
+        <planeGeometry args={[4, 4]} />
+        <shaderMaterial
+          vertexShader={glowVertexShader}
+          fragmentShader={glowFragmentShader}
+          uniforms={{
+            uTime: { value: 0 },
+            uIntensity: { value: 0.5 }
+          }}
+          transparent
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      <mesh ref={meshRef} position={[-6, 1.2, -1]} scale={2.5} material={owlMaterial}>
+        <planeGeometry args={[2, 2.5]} />
+      </mesh>
+    </>
   );
 }
 
-function LandedOwl3D({ avatarId, isListening, isSpeaking }: {
+function createOwlMaterial(texture: THREE.Texture) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uTexture: { value: texture },
+      uTime: { value: 0 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D uTexture;
+      uniform float uTime;
+      varying vec2 vUv;
+      
+      void main() {
+        vec4 texColor = texture2D(uTexture, vUv);
+        
+        // Gentle circular vignette - keep most of the image visible
+        vec2 center = vUv - 0.5;
+        
+        // Elliptical mask - wider coverage
+        float maskX = center.x * 1.2;
+        float maskY = center.y * 1.0;
+        float ellipseDist = length(vec2(maskX, maskY));
+        
+        // Very soft falloff - mostly visible in center, gentle fade at edges
+        float mask = 1.0 - smoothstep(0.4, 0.65, ellipseDist);
+        
+        // The image alpha (most PNGs have alpha=1 for solid bg)
+        // Just use the mask for edge fading
+        float alpha = mask;
+        
+        // Slight glow boost in center
+        float glow = smoothstep(0.5, 0.2, ellipseDist) * 0.1;
+        
+        gl_FragColor = vec4(texColor.rgb + glow, alpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+  });
+}
+
+function HorizonOwl({ avatarId, isListening, isSpeaking }: {
   avatarId: number;
   isListening: boolean;
   isSpeaking: boolean;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
+  const glowRef = useRef<THREE.Mesh>(null);
   const texture = useLoader(TextureLoader, owlImages[avatarId - 1] || owlImages[0]);
+  
+  const owlMaterial = useMemo(() => createOwlMaterial(texture), [texture]);
   
   useFrame((state) => {
     if (!meshRef.current) return;
     const time = state.clock.elapsedTime;
     
-    meshRef.current.position.y = Math.sin(time * 1.5) * 0.12;
-    meshRef.current.rotation.z = Math.sin(time * 0.8) * 0.02;
+    meshRef.current.position.y = -0.3 + Math.sin(time * 0.8) * 0.15;
+    meshRef.current.rotation.z = Math.sin(time * 0.5) * 0.02;
     
-    const baseScale = 2.8;
-    const pulseScale = isListening ? baseScale + 0.2 : isSpeaking ? baseScale + 0.1 : baseScale;
-    const pulse = Math.sin(time * 3) * 0.05;
+    const baseScale = 4.0;
+    const pulseScale = isListening ? baseScale + 0.4 : isSpeaking ? baseScale + 0.2 : baseScale;
+    const pulse = Math.sin(time * 2.5) * 0.1;
     meshRef.current.scale.setScalar(pulseScale + (isListening || isSpeaking ? pulse : 0));
+    
+    owlMaterial.uniforms.uTime.value = time;
+    
+    if (glowRef.current) {
+      const glowMat = glowRef.current.material as THREE.ShaderMaterial;
+      glowMat.uniforms.uTime.value = time;
+      glowMat.uniforms.uIntensity.value = isListening ? 1.8 : isSpeaking ? 1.4 : 0.8;
+      glowRef.current.position.copy(meshRef.current.position);
+      glowRef.current.position.z -= 0.5;
+      glowRef.current.scale.setScalar(meshRef.current.scale.x * 1.5);
+    }
   });
 
+  const glowVertexShader = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+
+  const glowFragmentShader = `
+    uniform float uTime;
+    uniform float uIntensity;
+    varying vec2 vUv;
+    
+    void main() {
+      vec2 center = vUv - 0.5;
+      float dist = length(center);
+      
+      float glow = exp(-dist * 3.0) * uIntensity;
+      
+      vec3 color1 = vec3(0.56, 0.42, 0.95);
+      vec3 color2 = vec3(0.39, 0.72, 0.95);
+      vec3 color3 = vec3(0.89, 0.98, 0.54);
+      
+      float t = sin(uTime * 0.5) * 0.5 + 0.5;
+      vec3 glowColor = mix(mix(color1, color2, t), color3, sin(uTime * 0.3) * 0.3 + 0.3);
+      
+      gl_FragColor = vec4(glowColor, glow * 0.6);
+    }
+  `;
+
   return (
-    <mesh ref={meshRef} position={[0, 0, 1]} scale={2.8}>
-      <planeGeometry args={[2, 2.5]} />
-      <meshBasicMaterial map={texture} transparent alphaTest={0.1} />
-    </mesh>
+    <>
+      <mesh ref={glowRef} position={[0, -0.3, -0.5]}>
+        <planeGeometry args={[4, 4]} />
+        <shaderMaterial
+          vertexShader={glowVertexShader}
+          fragmentShader={glowFragmentShader}
+          uniforms={{
+            uTime: { value: 0 },
+            uIntensity: { value: 0.8 }
+          }}
+          transparent
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      <mesh ref={meshRef} position={[0, -0.3, 0]} scale={4.0} material={owlMaterial}>
+        <planeGeometry args={[2, 2.5]} />
+      </mesh>
+    </>
   );
 }
 
@@ -206,11 +386,12 @@ interface Dashboard3DProps {
 function Scene({ avatarId, isListening, isSpeaking, showFlying }: Dashboard3DProps) {
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[0, 5, 5]} intensity={1} color="#9370db" />
-      <pointLight position={[-5, 3, 2]} intensity={0.5} color="#00ffcc" />
+      <ambientLight intensity={0.6} />
+      <pointLight position={[0, 5, 5]} intensity={1.2} color="#9370db" />
+      <pointLight position={[-5, 3, 2]} intensity={0.6} color="#00ffcc" />
+      <pointLight position={[5, 2, 3]} intensity={0.4} color="#f361d3" />
       
-      <PsychedelicWaves />
+      <MagicalOcean />
       <TwinklingStars />
       
       {showFlying ? (
@@ -221,7 +402,7 @@ function Scene({ avatarId, isListening, isSpeaking, showFlying }: Dashboard3DPro
           isSpeaking={isSpeaking}
         />
       ) : (
-        <LandedOwl3D 
+        <HorizonOwl 
           avatarId={avatarId}
           isListening={isListening}
           isSpeaking={isSpeaking}

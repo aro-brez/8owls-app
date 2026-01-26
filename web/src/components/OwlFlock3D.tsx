@@ -5,6 +5,15 @@ import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
 import * as THREE from "three";
 
+const owlImages = [
+  "/owls/realistic-owl-1.png",
+  "/owls/realistic-owl-2.png",
+  "/owls/realistic-owl-3.png",
+  "/owls/realistic-owl-4.png",
+  "/owls/realistic-owl-5.png",
+  "/owls/realistic-owl-6.png",
+];
+
 function isWebGLAvailable() {
   try {
     const canvas = document.createElement("canvas");
@@ -15,19 +24,60 @@ function isWebGLAvailable() {
   }
 }
 
+function createOwlMaterial(texture: THREE.Texture) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uTexture: { value: texture },
+      uTime: { value: 0 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D uTexture;
+      uniform float uTime;
+      varying vec2 vUv;
+      
+      void main() {
+        vec4 texColor = texture2D(uTexture, vUv);
+        
+        vec2 center = vUv - 0.5;
+        float maskX = center.x * 1.2;
+        float maskY = center.y * 1.0;
+        float ellipseDist = length(vec2(maskX, maskY));
+        float mask = 1.0 - smoothstep(0.4, 0.65, ellipseDist);
+        float alpha = mask;
+        float glow = smoothstep(0.5, 0.2, ellipseDist) * 0.1;
+        
+        gl_FragColor = vec4(texColor.rgb + glow, alpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+}
+
 interface OwlProps {
   position: [number, number, number];
   speed: number;
   wingPhase: number;
   scale: number;
   delay: number;
+  owlIndex: number;
 }
 
-function FlyingOwl({ position, speed, wingPhase, scale, delay }: OwlProps) {
+function FlyingOwl({ position, speed, wingPhase, scale, delay, owlIndex }: OwlProps) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useLoader(TextureLoader, "/owls/owl-flying.jpg");
+  const texture = useLoader(TextureLoader, owlImages[owlIndex % owlImages.length]);
   const startTime = useRef(Date.now());
   const initialZ = position[2];
+  
+  const material = useMemo(() => createOwlMaterial(texture), [texture]);
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -48,17 +98,13 @@ function FlyingOwl({ position, speed, wingPhase, scale, delay }: OwlProps) {
 
     meshRef.current.rotation.y = Math.PI + Math.sin(elapsed * 0.3) * 0.1;
     meshRef.current.rotation.z = Math.sin(elapsed * 2) * 0.05;
+    
+    material.uniforms.uTime.value = state.clock.elapsedTime;
   });
 
   return (
-    <mesh ref={meshRef} position={position}>
+    <mesh ref={meshRef} position={position} material={material}>
       <planeGeometry args={[2, 2.5]} />
-      <meshBasicMaterial 
-        map={texture} 
-        transparent 
-        side={THREE.DoubleSide}
-        opacity={0.9}
-      />
     </mesh>
   );
 }
@@ -150,16 +196,22 @@ function FallbackOwl({ phase, progress }: { phase: string; progress: number }) {
       className="absolute inset-0 flex items-center justify-center pointer-events-none"
       style={{ opacity }}
     >
-      <img
-        src="/owls/owl-flying.jpg"
-        alt="Owl"
+      <div
         className="transition-all duration-500"
         style={{
           transform: `translateX(${x}%) scale(${scale})`,
           maxWidth: "70%",
-          filter: "drop-shadow(0 0 60px rgba(147, 112, 219, 0.5)) drop-shadow(0 0 30px rgba(0, 255, 200, 0.3))"
+          WebkitMaskImage: "radial-gradient(ellipse 70% 80% at center, black 30%, transparent 70%)",
+          maskImage: "radial-gradient(ellipse 70% 80% at center, black 30%, transparent 70%)",
+          filter: "drop-shadow(0 0 60px rgba(147, 112, 219, 0.6)) drop-shadow(0 0 30px rgba(0, 255, 200, 0.4))"
         }}
-      />
+      >
+        <img
+          src="/owls/realistic-owl-1.png"
+          alt="Owl"
+          className="w-full h-full object-contain"
+        />
+      </div>
     </div>
   );
 }
@@ -180,6 +232,7 @@ export default function OwlFlock3D({ phase, progress, showFlock }: OwlFlock3DPro
         wingPhase: Math.random() * Math.PI * 2,
         scale: 0.5 + Math.random() * 0.3,
         delay: i * 0.2,
+        owlIndex: i,
       });
     }
     return owls;

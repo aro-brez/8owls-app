@@ -97,6 +97,14 @@ Eight Owls is a voice-enabled consciousness companion app where everyone gets a 
 - `NEXT_PUBLIC_API_URL` - Backend API URL
 
 ## Recent Changes
+- January 2026: Seamless owl blending and magical ocean
+  - Created vignette shader for owl images to fade edges seamlessly into background
+  - Replaced owl-flying.jpg with realistic-owl PNGs throughout
+  - Extended psychedelic waves into full-screen "magical ocean" effect
+  - Positioned owl at horizon emerging from the aurora waves
+  - Added radial glow effects behind owl for ethereal appearance
+  - Stars twinkling in the background for depth
+
 - January 2026: Voice conversation end-to-end implementation
   - Integrated Claude for AI thinking in /api/voice/converse endpoint
   - Added CORS header exposure for X-Transcript and X-Response
