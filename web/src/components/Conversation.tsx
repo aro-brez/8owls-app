@@ -317,15 +317,8 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
       </header>
 
       <main className="relative z-10 flex-1 flex flex-col items-center px-4 pb-6">
-        {/* Owl name floating in the scene */}
-        <div className="flex-shrink-0 pt-8 pb-4">
-          <p className="text-xl font-medium text-white/90 text-center drop-shadow-lg">
-            {profile.owlName}
-          </p>
-        </div>
-
-        {/* Spacer to push content down so owl is visible */}
-        <div className="flex-1 min-h-[40vh]" />
+        {/* Spacer to let the owl be visible in the immersive background */}
+        <div className="flex-1 min-h-[45vh]" />
 
         <div className="w-full max-w-3xl flex-1 space-y-4 overflow-hidden">
           {latestOwlMessage && (
