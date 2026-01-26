@@ -297,9 +297,11 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
           </svg>
         </button>
         
-        <h1 className="text-2xl md:text-3xl font-black tracking-wider text-white">
-          BREZ
-        </h1>
+        <img 
+          src="/8wls-logo.png" 
+          alt="8WLS" 
+          className="h-8 md:h-10 w-auto invert"
+        />
         
         <button
           onClick={() => setShowSettings(true)}

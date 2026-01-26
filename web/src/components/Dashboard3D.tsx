@@ -262,29 +262,31 @@ function createOwlMaterial(texture: THREE.Texture) {
       void main() {
         vec4 texColor = texture2D(uTexture, vUv);
         
-        // Gentle circular vignette - keep most of the image visible
-        vec2 center = vUv - 0.5;
+        // Scene dark background color
+        vec3 bgColor = vec3(0.039, 0.02, 0.082); // #0a0515
         
-        // Elliptical mask - wider coverage
-        float maskX = center.x * 1.2;
-        float maskY = center.y * 1.0;
+        vec2 center = vUv - 0.5;
+        float maskX = center.x * 1.1;
+        float maskY = center.y * 0.9;
         float ellipseDist = length(vec2(maskX, maskY));
         
-        // Very soft falloff - mostly visible in center, gentle fade at edges
-        float mask = 1.0 - smoothstep(0.4, 0.65, ellipseDist);
+        // Blend from owl image to dark background at edges
+        // Keep owl fully visible in center, blend to bg at edges
+        float blend = smoothstep(0.35, 0.55, ellipseDist);
         
-        // The image alpha (most PNGs have alpha=1 for solid bg)
-        // Just use the mask for edge fading
-        float alpha = mask;
+        // Mix owl with dark background
+        vec3 finalColor = mix(texColor.rgb, bgColor, blend);
         
-        // Slight glow boost in center
-        float glow = smoothstep(0.5, 0.2, ellipseDist) * 0.1;
+        // Add subtle glow in center
+        float glow = smoothstep(0.4, 0.15, ellipseDist) * 0.08;
+        finalColor += glow;
         
-        gl_FragColor = vec4(texColor.rgb + glow, alpha);
+        // Keep alpha at 1 - no transparency, just color blending
+        gl_FragColor = vec4(finalColor, 1.0);
       }
     `,
-    transparent: true,
-    depthWrite: false,
+    transparent: false,
+    depthWrite: true,
   });
 }
 
