@@ -687,30 +687,3 @@ function AuroraVisualizerDark({
   );
 }
 
-function OwlAvatarPickerDark({
-  selectedId,
-  onSelect,
-}: {
-  selectedId: number;
-  onSelect: (id: number) => void;
-}) {
-  const avatars = Array.from({ length: 12 }, (_, i) => i);
-
-  return (
-    <div className="grid grid-cols-4 gap-3 max-w-xs mx-auto">
-      {avatars.map((id) => (
-        <button
-          key={id}
-          onClick={() => onSelect(id)}
-          className={`p-2 rounded-xl transition-all ${
-            selectedId === id
-              ? "bg-white/10 ring-2 ring-violet-400/50 scale-110"
-              : "hover:bg-white/5"
-          }`}
-        >
-          <OwlAvatar avatarId={id} size="sm" animated={false} />
-        </button>
-      ))}
-    </div>
-  );
-}

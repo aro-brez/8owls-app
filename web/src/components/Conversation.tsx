@@ -289,29 +289,31 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
         </div>
       )}
 
-      <header className="relative z-10 flex items-center justify-between p-6">
+      <header className="relative z-10 flex items-center justify-between p-4 md:p-6">
         <button
           onClick={() => setShowSettings(true)}
-          className="p-2 hover:bg-white/10 rounded-full transition-colors"
+          className="p-2.5 bg-white/8 backdrop-blur-xl border border-white/15 rounded-full hover:bg-white/15 transition-all"
         >
-          <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg className="w-5 h-5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
         
-        <img 
-          src="/8wls-logo.png" 
-          alt="8WLS" 
-          className="h-8 md:h-10 w-auto invert"
-        />
+        <div className="px-4 py-2 bg-white/8 backdrop-blur-xl border border-white/15 rounded-full">
+          <img 
+            src="/8wls-logo.png" 
+            alt="8WLS" 
+            className="h-6 md:h-7 w-auto invert opacity-90"
+          />
+        </div>
         
         <button
           onClick={() => setShowSettings(true)}
-          className="p-2 hover:bg-white/10 rounded-full transition-colors"
+          className="p-2.5 bg-white/8 backdrop-blur-xl border border-white/15 rounded-full hover:bg-white/15 transition-all"
         >
-          <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <svg className="w-5 h-5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </button>
       </header>
@@ -320,24 +322,24 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
         {/* Spacer to let the owl be visible in the immersive background */}
         <div className="flex-1 min-h-[45vh]" />
 
-        <div className="w-full max-w-3xl flex-1 space-y-4 overflow-hidden">
+        <div className="w-full max-w-2xl space-y-3 overflow-hidden">
           {latestOwlMessage && (
-            <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10">
-              <p className="text-xs font-medium text-purple-300 mb-2 uppercase tracking-wider">
+            <div className="w-full px-5 py-4 rounded-2xl bg-white/8 backdrop-blur-xl border border-white/15 shadow-lg">
+              <p className="text-[10px] font-semibold text-amber-300/90 mb-1.5 uppercase tracking-widest">
                 {profile.owlName}
               </p>
-              <p className="text-white/90 text-lg leading-relaxed">
+              <p className="text-white text-base leading-relaxed drop-shadow-sm">
                 {latestOwlMessage.content}
               </p>
             </div>
           )}
           
           {latestUserMessage && (
-            <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-purple-500/10 backdrop-blur-md border border-white/10">
-              <p className="text-xs font-medium text-cyan-300 mb-2 uppercase tracking-wider">
+            <div className="w-full px-5 py-4 rounded-2xl bg-white/6 backdrop-blur-xl border border-white/10 shadow-lg">
+              <p className="text-[10px] font-semibold text-cyan-300/90 mb-1.5 uppercase tracking-widest">
                 You
               </p>
-              <p className="text-white/80 text-lg leading-relaxed">
+              <p className="text-white/95 text-base leading-relaxed drop-shadow-sm">
                 {latestUserMessage.content}
               </p>
             </div>
@@ -345,39 +347,39 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="flex-shrink-0 pt-6">
+        <div className="flex-shrink-0 pt-6 flex flex-col items-center">
           <button
             onClick={isRecording ? stopRecording : startRecording}
             disabled={isProcessing || isSpeaking}
-            className={`relative w-20 h-20 rounded-full transition-all duration-300 ${
+            className={`relative px-10 py-5 rounded-full transition-all duration-500 backdrop-blur-xl border ${
               isRecording 
-                ? "bg-gradient-to-br from-pink-500 to-purple-600 scale-110" 
-                : "bg-gradient-to-br from-purple-600 to-cyan-500"
+                ? "bg-gradient-to-r from-pink-500/40 to-purple-500/40 border-pink-400/40 scale-105" 
+                : "bg-white/10 border-white/20 hover:bg-white/15"
             } ${
               isProcessing || isSpeaking ? "opacity-50 cursor-not-allowed" : "hover:scale-105"
             }`}
             style={{
               boxShadow: isRecording 
-                ? '0 0 40px rgba(236, 72, 153, 0.5), 0 0 80px rgba(147, 51, 234, 0.3)' 
-                : '0 0 30px rgba(147, 51, 234, 0.4), 0 0 60px rgba(6, 182, 212, 0.2)'
+                ? '0 0 50px rgba(236, 72, 153, 0.4), inset 0 0 30px rgba(255,255,255,0.1)' 
+                : '0 0 40px rgba(147, 51, 234, 0.2), inset 0 0 20px rgba(255,255,255,0.05)'
             }}
           >
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="flex items-center justify-center gap-3">
               {isRecording ? (
-                <div className="w-6 h-6 bg-white rounded-sm" />
+                <div className="w-4 h-4 bg-white rounded-sm animate-pulse" />
               ) : (
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-white/90" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z" />
                 </svg>
               )}
+              <span className="text-white/90 text-sm font-medium tracking-wide">
+                {isProcessing ? "Thinking..." : isSpeaking ? "Speaking..." : isRecording ? "Stop" : "Speak"}
+              </span>
             </div>
             {isRecording && (
-              <div className="absolute inset-0 rounded-full animate-ping bg-pink-500/30" />
+              <div className="absolute inset-0 rounded-full animate-ping bg-pink-500/20" />
             )}
           </button>
-          <p className="text-sm text-white/50 text-center mt-3">
-            {isProcessing ? "Thinking..." : isSpeaking ? "Speaking..." : isRecording ? "Tap to stop" : "Tap to speak"}
-          </p>
         </div>
       </main>
 

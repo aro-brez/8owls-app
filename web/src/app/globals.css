@@ -110,21 +110,25 @@ body {
 }
 
 .btn-magical {
-  background: linear-gradient(135deg, rgba(143, 108, 243, 0.8), rgba(100, 183, 243, 0.8));
+  background: rgba(255, 255, 255, 0.08);
   color: white;
   border-radius: 9999px;
-  padding: 1rem 2rem;
+  padding: 1rem 2.5rem;
   font-weight: 500;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  transition: all 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 30px rgba(143, 108, 243, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.03);
 }
 
 .btn-magical:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 30px rgba(143, 108, 243, 0.4);
-  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.03);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 50px rgba(143, 108, 243, 0.25), inset 0 0 30px rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .text-bubble {
@@ -135,11 +139,12 @@ body {
 }
 
 .text-bubble-dark {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  padding: 1rem;
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
 .animate-breathe {
@@ -264,41 +269,41 @@ body {
 }
 
 .mic-button-dark {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(143, 108, 243, 0.6), rgba(100, 183, 243, 0.6));
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 1.25rem 2rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 30px rgba(143, 108, 243, 0.3);
-  backdrop-filter: blur(10px);
+  gap: 0.75rem;
+  transition: all 0.4s ease;
+  box-shadow: 0 0 40px rgba(143, 108, 243, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
 }
 
 .mic-button-dark:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 40px rgba(143, 108, 243, 0.5);
-  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.03);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 50px rgba(143, 108, 243, 0.3), inset 0 0 30px rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .mic-button-dark.recording {
-  animation: pulse-recording-dark 1.5s ease-in-out infinite;
-  background: linear-gradient(135deg, rgba(243, 97, 211, 0.6), rgba(143, 108, 243, 0.6));
+  animation: pulse-recording-dark 2s ease-in-out infinite;
+  background: rgba(243, 97, 211, 0.15);
+  border-color: rgba(243, 97, 211, 0.3);
 }
 
 @keyframes pulse-recording-dark {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 4px 30px rgba(243, 97, 211, 0.4);
-    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 40px rgba(243, 97, 211, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.05);
   }
   50% {
-    transform: scale(1.08);
-    box-shadow: 0 8px 50px rgba(243, 97, 211, 0.6);
-    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.02);
+    box-shadow: 0 0 60px rgba(243, 97, 211, 0.4), inset 0 0 30px rgba(255, 255, 255, 0.08);
   }
 }
 
@@ -344,24 +349,27 @@ body {
 }
 
 .input-mystical {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
   padding: 1rem 1.5rem;
   color: white;
-  font-size: 1.125rem;
+  font-size: 1rem;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   outline: none;
+  backdrop-filter: blur(20px);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.02);
 }
 
 .input-mystical::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.35);
 }
 
 .input-mystical:focus {
-  border-color: rgba(143, 108, 243, 0.5);
-  box-shadow: 0 0 20px rgba(143, 108, 243, 0.2);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 30px rgba(143, 108, 243, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.03);
 }
 
 .particle {

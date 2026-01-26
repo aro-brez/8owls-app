@@ -166,15 +166,15 @@ function FlyingOwl3D({ avatarId, isLanding, isListening, isSpeaking }: {
       meshRef.current.position.z = meshRef.current.position.z * 0.95 + 0 * 0.05;
       meshRef.current.rotation.z *= 0.9;
       
-      const targetScale = 4.0;
+      const targetScale = 3.2;
       const currentScale = meshRef.current.scale.x;
       meshRef.current.scale.setScalar(currentScale + (targetScale - currentScale) * 0.03);
     } else {
       meshRef.current.position.y = -0.3 + Math.sin(time * 0.8) * 0.15;
       meshRef.current.rotation.z = Math.sin(time * 0.5) * 0.02;
       
-      const baseScale = 4.0;
-      const pulseScale = isListening ? baseScale + 0.4 : isSpeaking ? baseScale + 0.2 : baseScale;
+      const baseScale = 3.2;
+      const pulseScale = isListening ? baseScale + 0.3 : isSpeaking ? baseScale + 0.15 : baseScale;
       const pulse = Math.sin(time * 2.5) * 0.1;
       meshRef.current.scale.setScalar(pulseScale + (isListening || isSpeaking ? pulse : 0));
     }
@@ -324,8 +324,8 @@ function HorizonOwl({ avatarId, isListening, isSpeaking }: {
     meshRef.current.position.y = -0.3 + Math.sin(time * 0.8) * 0.15;
     meshRef.current.rotation.z = Math.sin(time * 0.5) * 0.02;
     
-    const baseScale = 4.0;
-    const pulseScale = isListening ? baseScale + 0.4 : isSpeaking ? baseScale + 0.2 : baseScale;
+    const baseScale = 3.2;
+    const pulseScale = isListening ? baseScale + 0.3 : isSpeaking ? baseScale + 0.15 : baseScale;
     const pulse = Math.sin(time * 2.5) * 0.1;
     meshRef.current.scale.setScalar(pulseScale + (isListening || isSpeaking ? pulse : 0));
     
@@ -387,7 +387,7 @@ function HorizonOwl({ avatarId, isListening, isSpeaking }: {
           blending={THREE.AdditiveBlending}
         />
       </mesh>
-      <mesh ref={meshRef} position={[0, -0.3, 0]} scale={4.0} material={owlMaterial}>
+      <mesh ref={meshRef} position={[0, -0.3, 0]} scale={3.2} material={owlMaterial}>
         <planeGeometry args={[2, 2.5]} />
       </mesh>
     </>
