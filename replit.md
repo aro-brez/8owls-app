@@ -97,6 +97,14 @@ Eight Owls is a voice-enabled consciousness companion app where everyone gets a 
 - `NEXT_PUBLIC_API_URL` - Backend API URL
 
 ## Recent Changes
+- January 2026: Full-screen immersive aurora experience
+  - Made Dashboard3D cover entire screen as immersive background
+  - All UI elements now float on top of the aurora
+  - Aurora waves extend across the full viewport (no sectioned boxes)
+  - Added divine animated halo glow around owl (gold/purple/cyan shifting)
+  - Smooth edge blending with corner softening for seamless owl integration
+  - Replaced BREZ with 8WLS logo in header
+
 - January 2026: Seamless owl blending and magical ocean
   - Created vignette shader for owl images to fade edges seamlessly into background
   - Replaced owl-flying.jpg with realistic-owl PNGs throughout
