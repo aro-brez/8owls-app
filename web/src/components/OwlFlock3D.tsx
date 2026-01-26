@@ -45,26 +45,22 @@ function createOwlMaterial(texture: THREE.Texture) {
       void main() {
         vec4 texColor = texture2D(uTexture, vUv);
         
-        // Scene dark background color
-        vec3 bgColor = vec3(0.039, 0.02, 0.082);
-        
         vec2 center = vUv - 0.5;
-        float maskX = center.x * 1.1;
-        float maskY = center.y * 0.9;
-        float ellipseDist = length(vec2(maskX, maskY));
+        float dist = length(center);
         
-        // Blend from owl to dark background at edges
-        float blend = smoothstep(0.35, 0.55, ellipseDist);
-        vec3 finalColor = mix(texColor.rgb, bgColor, blend);
+        // Fade alpha completely at edges
+        float alpha = 1.0 - smoothstep(0.3, 0.5, dist);
         
-        float glow = smoothstep(0.4, 0.15, ellipseDist) * 0.08;
-        finalColor += glow;
+        if (alpha < 0.01) discard;
         
-        gl_FragColor = vec4(finalColor, 1.0);
+        float glow = smoothstep(0.35, 0.1, dist) * 0.1;
+        vec3 finalColor = texColor.rgb + glow;
+        
+        gl_FragColor = vec4(finalColor, alpha);
       }
     `,
-    transparent: false,
-    depthWrite: true,
+    transparent: true,
+    depthWrite: false,
     side: THREE.DoubleSide,
   });
 }
