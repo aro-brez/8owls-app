@@ -77,37 +77,39 @@ function MagicalOcean() {
     void main() {
       vec2 uv = vUv;
       
-      // Multiple wave layers for rich ocean effect
-      float wave1 = sin(uv.x * 4.0 + uTime * 0.4) * 0.5 + 0.5;
-      float wave2 = sin(uv.x * 6.0 - uTime * 0.5 + uv.y * 2.0) * 0.5 + 0.5;
-      float wave3 = sin((uv.x * 3.0 + uv.y * 1.5) + uTime * 0.3) * 0.5 + 0.5;
-      float wave4 = sin(uv.x * 8.0 + uTime * 0.6) * 0.5 + 0.5;
-      float wave5 = cos(uv.x * 5.0 - uTime * 0.35 + uv.y) * 0.5 + 0.5;
+      // Distinct wave bands - more defined, less blended
+      float wave1 = pow(sin(uv.x * 3.0 + uTime * 0.35) * 0.5 + 0.5, 1.5);
+      float wave2 = pow(sin(uv.x * 5.0 - uTime * 0.4 + uv.y * 1.5) * 0.5 + 0.5, 1.8);
+      float wave3 = pow(sin((uv.x * 2.5 + uv.y * 1.0) + uTime * 0.25) * 0.5 + 0.5, 2.0);
+      float wave4 = pow(sin(uv.x * 7.0 + uTime * 0.5) * 0.5 + 0.5, 1.6);
+      float wave5 = pow(cos(uv.x * 4.0 - uTime * 0.3 + uv.y * 0.8) * 0.5 + 0.5, 1.7);
       
-      // Aurora colors - cyan, purple, pink, turquoise, gold
+      // Aurora colors - vibrant bands
       vec3 color1 = vec3(0.39, 0.72, 0.95); // Cyan
       vec3 color2 = vec3(0.56, 0.42, 0.95); // Purple
       vec3 color3 = vec3(0.95, 0.38, 0.83); // Pink
       vec3 color4 = vec3(0.36, 0.95, 0.70); // Turquoise
       vec3 color5 = vec3(0.89, 0.98, 0.54); // Gold/Mindaro
       
-      // Blend colors in waves
-      vec3 finalColor = mix(color1, color2, wave1);
-      finalColor = mix(finalColor, color3, wave2 * 0.6);
-      finalColor = mix(finalColor, color4, wave3 * 0.4);
-      finalColor = mix(finalColor, color5, wave4 * 0.2);
+      // Layer distinct color bands
+      vec3 finalColor = color1 * wave1 * 0.5;
+      finalColor += color2 * wave2 * 0.4;
+      finalColor += color3 * wave3 * 0.3;
+      finalColor += color4 * wave4 * 0.25;
+      finalColor += color5 * wave5 * 0.15;
       
-      // Add shimmer
-      float shimmer = sin(uv.x * 20.0 + uTime * 2.0) * sin(uv.y * 15.0 - uTime * 1.5) * 0.1;
+      // Subtle shimmer
+      float shimmer = sin(uv.x * 25.0 + uTime * 2.5) * sin(uv.y * 18.0 - uTime * 2.0) * 0.08;
       finalColor += shimmer;
       
-      // Full screen aurora - flows everywhere
+      // Soft vignette from center
       float centerDist = length(uv - 0.5);
-      float vignette = 1.0 - smoothstep(0.3, 0.9, centerDist);
+      float vignette = 1.0 - smoothstep(0.25, 0.85, centerDist);
       
-      // Gentle overall fade - slightly more opaque for visibility
-      float alpha = (0.62 + wave1 * 0.2 + wave5 * 0.12) * vignette;
-      alpha = clamp(alpha, 0.0, 0.88);
+      // Lighter, more transparent - let the stars show through
+      float waveAlpha = wave1 * 0.35 + wave2 * 0.25 + wave3 * 0.2;
+      float alpha = (0.25 + waveAlpha) * vignette;
+      alpha = clamp(alpha, 0.0, 0.7);
       
       gl_FragColor = vec4(finalColor, alpha);
     }
