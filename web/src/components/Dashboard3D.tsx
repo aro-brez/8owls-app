@@ -14,19 +14,22 @@ const owlImages = [
   "/owls/realistic-owl-6.png",
 ];
 
-function TwinklingStars() {
+function StarryGalaxy() {
   const starsRef = useRef<THREE.Points>(null);
-  const count = 200;
+  const count = 600;
   
   const geometry = useMemo(() => {
     const positions = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 15;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 10 - 5;
+      positions[i * 3] = (Math.random() - 0.5) * 40;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
+      positions[i * 3 + 2] = -8 - Math.random() * 15;
+      sizes[i] = Math.random() * 0.08 + 0.02;
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
     return geo;
   }, []);
 
@@ -34,16 +37,16 @@ function TwinklingStars() {
     if (!starsRef.current) return;
     const time = state.clock.elapsedTime;
     const material = starsRef.current.material as THREE.PointsMaterial;
-    material.opacity = 0.6 + Math.sin(time * 0.5) * 0.2;
+    material.opacity = 0.5 + Math.sin(time * 0.3) * 0.15;
   });
 
   return (
     <points ref={starsRef} geometry={geometry}>
       <pointsMaterial
-        size={0.05}
+        size={0.06}
         color="#ffffff"
         transparent
-        opacity={0.8}
+        opacity={0.6}
         sizeAttenuation
       />
     </points>
@@ -102,9 +105,9 @@ function MagicalOcean() {
       float centerDist = length(uv - 0.5);
       float vignette = 1.0 - smoothstep(0.3, 0.9, centerDist);
       
-      // Gentle overall fade
-      float alpha = (0.5 + wave1 * 0.25 + wave5 * 0.15) * vignette;
-      alpha = clamp(alpha, 0.0, 0.85);
+      // Gentle overall fade - slightly more opaque for visibility
+      float alpha = (0.62 + wave1 * 0.2 + wave5 * 0.12) * vignette;
+      alpha = clamp(alpha, 0.0, 0.88);
       
       gl_FragColor = vec4(finalColor, alpha);
     }
@@ -182,7 +185,7 @@ function FlyingOwl3D({ avatarId, isLanding, isListening, isSpeaking }: {
     if (glowRef.current) {
       const glowMat = glowRef.current.material as THREE.ShaderMaterial;
       glowMat.uniforms.uTime.value = time;
-      const intensity = phase === "idle" ? (isListening ? 1.8 : isSpeaking ? 1.4 : 0.8) : 0.5;
+      const intensity = phase === "idle" ? (isListening ? 1.3 : isSpeaking ? 1.0 : 0.55) : 0.35;
       glowMat.uniforms.uIntensity.value = intensity;
       glowRef.current.position.copy(meshRef.current.position);
       glowRef.current.position.z -= 0.5;
@@ -334,7 +337,7 @@ function HorizonOwl({ avatarId, isListening, isSpeaking }: {
     if (glowRef.current) {
       const glowMat = glowRef.current.material as THREE.ShaderMaterial;
       glowMat.uniforms.uTime.value = time;
-      glowMat.uniforms.uIntensity.value = isListening ? 1.8 : isSpeaking ? 1.4 : 0.8;
+      glowMat.uniforms.uIntensity.value = isListening ? 1.3 : isSpeaking ? 1.0 : 0.55;
       glowRef.current.position.copy(meshRef.current.position);
       glowRef.current.position.z -= 0.5;
       glowRef.current.scale.setScalar(meshRef.current.scale.x * 1.5);
@@ -380,7 +383,7 @@ function HorizonOwl({ avatarId, isListening, isSpeaking }: {
           fragmentShader={glowFragmentShader}
           uniforms={{
             uTime: { value: 0 },
-            uIntensity: { value: 0.8 }
+            uIntensity: { value: 0.55 }
           }}
           transparent
           depthWrite={false}
@@ -410,7 +413,7 @@ function Scene({ avatarId, isListening, isSpeaking, showFlying }: Dashboard3DPro
       <pointLight position={[5, 2, 3]} intensity={0.4} color="#f361d3" />
       
       <MagicalOcean />
-      <TwinklingStars />
+      <StarryGalaxy />
       
       {showFlying ? (
         <FlyingOwl3D 
