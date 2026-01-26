@@ -263,16 +263,27 @@ function createOwlMaterial(texture: THREE.Texture) {
         vec4 texColor = texture2D(uTexture, vUv);
         
         vec2 center = vUv - 0.5;
+        
+        // Super smooth circular fade - starts very early, very gradual
         float dist = length(center);
         
-        // Fade alpha completely at edges - no visible boundary
-        float alpha = 1.0 - smoothstep(0.3, 0.5, dist);
+        // Multiple layered smooth fades for ultra-soft edges
+        float fade1 = 1.0 - smoothstep(0.15, 0.45, dist);
+        float fade2 = 1.0 - smoothstep(0.2, 0.5, dist);
+        float alpha = fade1 * fade2;
         
-        // Discard fully transparent pixels
+        // Extra soft corners - fade more aggressively in corners
+        float cornerDist = max(abs(center.x), abs(center.y));
+        float cornerFade = 1.0 - smoothstep(0.2, 0.4, cornerDist);
+        alpha *= cornerFade;
+        
+        // Smooth cubic falloff for extra softness
+        alpha = alpha * alpha * (3.0 - 2.0 * alpha);
+        
         if (alpha < 0.01) discard;
         
-        // Subtle glow in center
-        float glow = smoothstep(0.35, 0.1, dist) * 0.1;
+        // Soft glow in center
+        float glow = smoothstep(0.3, 0.05, dist) * 0.12;
         vec3 finalColor = texColor.rgb + glow;
         
         gl_FragColor = vec4(finalColor, alpha);
