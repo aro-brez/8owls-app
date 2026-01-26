@@ -98,20 +98,21 @@ function MagicalOcean() {
       float shimmer = sin(uv.x * 20.0 + uTime * 2.0) * sin(uv.y * 15.0 - uTime * 1.5) * 0.1;
       finalColor += shimmer;
       
-      // Gradient: stronger at bottom, fades toward top (horizon)
-      float verticalFade = smoothstep(1.0, 0.0, uv.y);
-      float horizonGlow = exp(-pow((uv.y - 0.85) * 4.0, 2.0)) * 0.4;
+      // Full screen aurora - flows everywhere
+      float centerDist = length(uv - 0.5);
+      float vignette = 1.0 - smoothstep(0.3, 0.9, centerDist);
       
-      float alpha = (0.6 + wave1 * 0.2 + wave5 * 0.1) * verticalFade + horizonGlow;
-      alpha = clamp(alpha, 0.0, 0.9);
+      // Gentle overall fade
+      float alpha = (0.5 + wave1 * 0.25 + wave5 * 0.15) * vignette;
+      alpha = clamp(alpha, 0.0, 0.85);
       
       gl_FragColor = vec4(finalColor, alpha);
     }
   `;
 
   return (
-    <mesh ref={meshRef} position={[0, -4, -2]} rotation={[-0.3, 0, 0]}>
-      <planeGeometry args={[30, 20]} />
+    <mesh ref={meshRef} position={[0, 0, -3]} rotation={[0, 0, 0]}>
+      <planeGeometry args={[50, 40]} />
       <shaderMaterial
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
@@ -263,28 +264,39 @@ function createOwlMaterial(texture: THREE.Texture) {
         vec4 texColor = texture2D(uTexture, vUv);
         
         vec2 center = vUv - 0.5;
-        
-        // Super smooth circular fade - starts very early, very gradual
         float dist = length(center);
         
-        // Multiple layered smooth fades for ultra-soft edges
-        float fade1 = 1.0 - smoothstep(0.15, 0.45, dist);
-        float fade2 = 1.0 - smoothstep(0.2, 0.5, dist);
-        float alpha = fade1 * fade2;
+        // Smooth circular fade
+        float fade = 1.0 - smoothstep(0.2, 0.48, dist);
         
-        // Extra soft corners - fade more aggressively in corners
+        // Extra soft corners
         float cornerDist = max(abs(center.x), abs(center.y));
-        float cornerFade = 1.0 - smoothstep(0.2, 0.4, cornerDist);
-        alpha *= cornerFade;
+        float cornerFade = 1.0 - smoothstep(0.25, 0.45, cornerDist);
+        float alpha = fade * cornerFade;
         
-        // Smooth cubic falloff for extra softness
+        // Smooth falloff
         alpha = alpha * alpha * (3.0 - 2.0 * alpha);
         
         if (alpha < 0.01) discard;
         
-        // Soft glow in center
-        float glow = smoothstep(0.3, 0.05, dist) * 0.12;
-        vec3 finalColor = texColor.rgb + glow;
+        // Divine golden/purple halo glow around the owl
+        float haloStart = 0.15;
+        float haloEnd = 0.4;
+        float haloStrength = smoothstep(haloStart, 0.25, dist) * (1.0 - smoothstep(0.25, haloEnd, dist));
+        
+        // Animated halo colors
+        vec3 haloColor1 = vec3(0.89, 0.78, 0.54); // Gold
+        vec3 haloColor2 = vec3(0.56, 0.42, 0.95); // Purple
+        vec3 haloColor3 = vec3(0.39, 0.72, 0.95); // Cyan
+        float t = sin(uTime * 0.5) * 0.5 + 0.5;
+        vec3 haloColor = mix(mix(haloColor1, haloColor2, t), haloColor3, sin(uTime * 0.3) * 0.3 + 0.2);
+        
+        // Add halo glow
+        vec3 finalColor = texColor.rgb + haloColor * haloStrength * 0.6;
+        
+        // Inner radiance
+        float innerGlow = smoothstep(0.25, 0.0, dist) * 0.15;
+        finalColor += innerGlow;
         
         gl_FragColor = vec4(finalColor, alpha);
       }

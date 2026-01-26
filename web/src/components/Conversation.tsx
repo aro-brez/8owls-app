@@ -274,11 +274,13 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
 
   return (
     <div className="min-h-screen bg-[#0a0515] flex flex-col overflow-hidden relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0515] via-[#12082a] to-[#0a0515]" />
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-500/10 rounded-full blur-3xl" />
+      {/* Full-screen immersive 3D aurora background */}
+      <div className="absolute inset-0 z-0">
+        <Dashboard3D 
+          avatarId={profile.owlAvatar}
+          isListening={isRecording}
+          isSpeaking={isSpeaking}
+        />
       </div>
 
       {error && (
@@ -315,25 +317,15 @@ export default function Conversation({ profile, onReset }: ConversationProps) {
       </header>
 
       <main className="relative z-10 flex-1 flex flex-col items-center px-4 pb-6">
-        <div className="flex-shrink-0 w-full h-72 md:h-96 relative">
-          <Dashboard3D 
-            avatarId={profile.owlAvatar}
-            isListening={isRecording}
-            isSpeaking={isSpeaking}
-          />
-          <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-lg font-medium text-white/90">
+        {/* Owl name floating in the scene */}
+        <div className="flex-shrink-0 pt-8 pb-4">
+          <p className="text-xl font-medium text-white/90 text-center drop-shadow-lg">
             {profile.owlName}
           </p>
         </div>
 
-        <div className="w-full max-w-3xl py-4">
-          <AuroraVisualizer
-            isListening={isRecording}
-            isSpeaking={isSpeaking}
-            isProcessing={isProcessing}
-            audioLevel={audioLevel}
-          />
-        </div>
+        {/* Spacer to push content down so owl is visible */}
+        <div className="flex-1 min-h-[40vh]" />
 
         <div className="w-full max-w-3xl flex-1 space-y-4 overflow-hidden">
           {latestOwlMessage && (
