@@ -55,6 +55,6 @@ localPort = 8000
 externalPort = 8000
 
 [deployment]
-deploymentTarget = "vm"
-run = ["bash", "-c", "cd web && npm start & python run.py"]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "python run.py & cd web && npm run start"]
 build = ["bash", "-c", "cd web && npm run build"]
