@@ -9,8 +9,10 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# Python libs (but not web/src/lib)
+/lib/
 lib64/
+!web/src/lib/
 parts/
 sdist/
 var/
